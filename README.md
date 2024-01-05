@@ -31,7 +31,7 @@ wget https:\\
 ```
 
 ## Mapping of conserved regulatory elements 
-A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in human and mouse, forming a catalogue of cis-regulatory elements (CREs). To create specific regulatory element maps for the analysis of CRC somatic mutaions in the two species, we utilise data originating only from normal colonic tissue.
+A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in both human and mouse, forming a catalogue of cis-regulatory elements (CREs). To create specific regulatory element maps for the analysis of CRC somatic mutaions in the two species, we utilise data originating only from normal colonic tissue.
 
 Relevant ENCODE information used in the study is outlined in the table below:
 
@@ -89,7 +89,7 @@ Relevant ENCODE information used in the study is outlined in the table below:
 **Total mouse CRE files** = 5
 
 ### Dowload CRE data from ENCODE
-A file containing all of the URLs necessary to download human and mouse CRE data is located in the ```Files``` directory of this repository. To download CRE data run the following code:
+A file containing all of the URLs necessary to download human and mouse CRE data shown in the table above is located in the ```Files``` directory of this repository. To download CRE data run the following code:
 
 ```
 xargs -L 1 curl -O -J -L < ./Files/encode_cre_files.txt
