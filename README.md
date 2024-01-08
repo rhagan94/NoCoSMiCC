@@ -10,7 +10,7 @@ This repository contains the files and scripts required to enable reproduction o
 
 ## 1. Data access
 
-The analysis of non-coding somatic mutations implictaed in colorectal cancer (CRC) development first requires collation of Whole Genome Sequencing (WGS) data. A large number of CRC WGS databases are now available and can be accessed by following the relevant data access procedures:
+The analysis of non-coding somatic mutations involved in colorectal cancer (CRC) development first requires the collation of Whole Genome Sequencing (WGS) data from CRC patients. A relatively large number of CRC WGS databases are now available and can be accessed by following the relevant data access procedures:
 
 - Genomics England (https://www.genomicsengland.co.uk/research/research-environment)
 - Hartwig Medical Foundation (https://www.hartwigmedicalfoundation.nl/en/data/data-access-request/)
@@ -41,6 +41,15 @@ wget https:\\
 A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in both human and mouse, forming a catalogue of cis-regulatory elements (CREs). To create specific regulatory element maps for the analysis of CRC somatic mutaions in the two species, we utilise data originating only from *normal colonic tissue*.
 
 Relevant ENCODE information used in the study is outlined in the table below:
+
+**Biosample** = The biological material used as input for the experiment.
+
+**Species** = The organism used in the experiment - human or mouse.
+
+**Accession** = The specific ENCODE assay (experiment) from which the data is derived.
+
+**Associated files** = Files available for download for each accession. 
+
 
 |   Biosample     |   Species  | Accession   | Associated files             
 | :--------------:| :---------:|:-----------:|:-----------:
@@ -95,6 +104,8 @@ Relevant ENCODE information used in the study is outlined in the table below:
 
 **Total mouse CRE files** = 5
 
+Additional information on the data organisation structure within the ENCODE project can be found here: https://www.encodeproject.org/help/data-organization/ 
+
 ### Dowload CRE data from ENCODE
 A file containing all of the URLs necessary to download human and mouse CRE data shown in the table above is located in the ```Files``` directory of this repository. To download CRE data run the following code:
 
@@ -102,7 +113,7 @@ A file containing all of the URLs necessary to download human and mouse CRE data
 # Create a new directory to store the CRE data files
 mkdir ./raw_data/encode_cres
 
-# Switch to the new directory and download
+# Switch to the new directory and download the data from ENCODE
 cd ./raw_data/encode_cres
 xargs -L 1 curl -O -J -L < ./Files/encode_cre_files.txt
 ```
