@@ -121,6 +121,19 @@ xargs -L 1 curl -O -J -L < ./Files/encode_cre_files.txt
 ## 3) Construction of a syntenic regulatory map
 For the next stage of the analysis, a synteny map is constructed using the human, mouse and dog genomes. 
 
+### Download the 'chain files' from UCSC for human, mouse and dog comparisons
+```
+# Make a directory to store the chain files
+mkdir reference_genome/ucsc_chain
+
+# Mouse to human
+wget -q "https://hgdownload.soe.ucsc.edu/goldenPath/mm39/liftOver/mm39ToHg38.over.chain.gz" -P reference_genome/ucsc_chain
+
+# Dog to human
+wget -q "https://hgdownload.soe.ucsc.edu/goldenPath/canFam6/liftOver/canFam6ToHg38.over.chain.gz" -P reference_genome/ucsc_chain
+
+```
+
 ## 4) Construction of TAD maps
 Topologically associated domains (TADs) are evolutionarily conserved and self-interacting regions of the genome with important functions in gene regulation. Using the syntenic colorectal regulatory element map, a TAD map is created to identify elements that are conserved between TAD boundaries in the different species.
 
