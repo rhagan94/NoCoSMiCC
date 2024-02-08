@@ -116,7 +116,7 @@ A file containing all of the URLs necessary to download human and mouse CRE data
 
 ```
 # Create a new directory to store the CRE data files
-mkdir ./raw_data/encode_cres
+mkdir -p ./raw_data/encode_cres
 
 # Switch to the new directory and download the data from ENCODE
 cd ./raw_data/encode_cres
