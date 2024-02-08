@@ -77,3 +77,9 @@ https://www.encodeproject.org/files/ENCFF257QEB/@@download/ENCFF257QEB.bed.gz
 https://www.encodeproject.org/files/ENCFF312SCY/@@download/ENCFF312SCY.bigBed
 https://www.encodeproject.org/files/ENCFF841KWY/@@download/ENCFF841KWY.bed.gz
 https://www.encodeproject.org/files/ENCFF669TTI/@@download/ENCFF669TTI.bigBed
+https://www.encodeproject.org/files/ENCFF842GND/@@download/ENCFF842GND.bed.gz
+https://www.encodeproject.org/files/ENCFF141OKN/@@download/ENCFF141OKN.bigBed
+https://www.encodeproject.org/files/ENCFF478BCY/@@download/ENCFF478BCY.bed.gz
+https://www.encodeproject.org/files/ENCFF738NDA/@@download/ENCFF738NDA.bigBed
+https://www.encodeproject.org/files/ENCFF653ZCA/@@download/ENCFF653ZCA.bed.gz
+https://www.encodeproject.org/files/ENCFF620THB/@@download/ENCFF620THB.bigBed
