@@ -51,62 +51,67 @@ Relevant ENCODE information used in the study is outlined in the table below:
 **Associated files** = Files available for download for each accession. 
 
 
-|   Biosample     |   Species  | Accession   | Associated files             
-| :--------------:| :---------:|:-----------:|:-----------:
-| Large intestine |   Mouse    | ENCSR557MSF | ENCFF152AFP.bed.gz & ENCFF954ZED.bigBed
-| Large intestine |   Human    | ENCSR073QUR | ENCFF024PQS.bed.gz & ENCFF778PTM.bigBed
-| Large intestine |   Human    | ENCSR751PAL | ENCFF034BHY.bed.gz & ENCFF524SID.bigBed
-| Large intestine |   Human    | ENCSR229WYJ | ENCFF572DWG.bed.gz & ENCFF281JFE.bigBed
-| Large intestine |   Human    | ENCSR512QPR | ENCFF205FKB.bed.gz & ENCFF970REE.bigbed
-| Large intestine |   Human    | ENCSR206POU | ENCFF661PLY.bed.gz & ENCFF048AGW.bigBed
-| Large intestine |   Human    | ENCSR834NCV | ENCFF666XFC.bed.gz & ENCFF898SJN.bigBed
-| Large intestine |   Human    | ENCSR389UFY | ENCFF025KEO.bed.gz & ENCFF850JRQ.bigBed
-| Large intestine |   Human    | ENCSR481AZU | ENCFF900LHN.bed.gz & ENCFF169NIT.bigBed
-| Large intestine |   Human    | ENCSR207LTA | ENCFF803TAS.bed.gz & ENCFF362GPG.bigBed
-| Large intestine |   Human    | ENCSR211XAO | ENCFF284MXI.bed.gz & ENCFF063IWT.bigBed
-| Large intestine |   Human    | ENCSR735GNP | ENCFF715SJC.bed.gz & ENCFF118IPF.bigBed
-| Large intestine |   Human    | ENCSR373KEK | ENCFF257QEB.bed.gz & ENCFF312SCY.bigBed
-| Large intestine |   Human    | ENCSR033DHK | ENCFF633GHY.bed.gz & ENCFF661FXP.bigBed
-| Large intestine |   Human    | ENCSR368VZW | ENCFF841KWY.bed.gz & ENCFF669TTI.bigBed
+Sample number |   Biosample     |   Species  | Accession   | Associated files             
+| :--------------:| :--------------:| :---------:|:-----------:|:-----------:
+| 1| Large intestine |   Mouse    | ENCSR557MSF | ENCFF152AFP.bed.gz & ENCFF954ZED.bigBed
+| 2| Large intestine |   Human    | ENCSR073QUR | ENCFF024PQS.bed.gz & ENCFF778PTM.bigBed
+| 3| Large intestine |   Human    | ENCSR751PAL | ENCFF034BHY.bed.gz & ENCFF524SID.bigBed
+| 4| Large intestine |   Human    | ENCSR229WYJ | ENCFF572DWG.bed.gz & ENCFF281JFE.bigBed
+| 5| Large intestine |   Human    | ENCSR512QPR | ENCFF205FKB.bed.gz & ENCFF970REE.bigbed
+| 6| Large intestine |   Human    | ENCSR206POU | ENCFF661PLY.bed.gz & ENCFF048AGW.bigBed
+| 7| Large intestine |   Human    | ENCSR834NCV | ENCFF666XFC.bed.gz & ENCFF898SJN.bigBed
+| 8| Large intestine |   Human    | ENCSR389UFY | ENCFF025KEO.bed.gz & ENCFF850JRQ.bigBed
+| 9| Large intestine |   Human    | ENCSR481AZU | ENCFF900LHN.bed.gz & ENCFF169NIT.bigBed
+| 10| Large intestine |   Human    | ENCSR207LTA | ENCFF803TAS.bed.gz & ENCFF362GPG.bigBed
+| 11| Large intestine |   Human    | ENCSR211XAO | ENCFF284MXI.bed.gz & ENCFF063IWT.bigBed
+| 12| Large intestine |   Human    | ENCSR735GNP | ENCFF715SJC.bed.gz & ENCFF118IPF.bigBed
+| 13| Large intestine |   Human    | ENCSR373KEK | ENCFF257QEB.bed.gz & ENCFF312SCY.bigBed
+| 14| Large intestine |   Human    | ENCSR033DHK | ENCFF633GHY.bed.gz & ENCFF661FXP.bigBed
+| 15| Large intestine |   Human    | ENCSR368VZW | ENCFF841KWY.bed.gz & ENCFF669TTI.bigBed
 | ----------------| ---------- |-----------  | -------------------------------------
-|   Intestine     |   Mouse    | ENCSR089NNM | ENCFF974UWG.bed.gz & ENCFF824OZP.bigBed
-|   Intestine     |   Mouse    | ENCSR496ZLW | ENCFF751RMP.bed.gz & ENCFF604EPU.bigBed
-|   Intestine     |   Mouse    | ENCSR884KZR | ENCFF556NXC.bed.gz & ENCFF278JOB.bigBed
-|   Intestine     |   Mouse    | ENCSR371LBI | ENCFF931ZNP.bed.gz & ENCFF479RIY.bigBed
+| 16|  Intestine     |   Mouse    | ENCSR089NNM | ENCFF974UWG.bed.gz & ENCFF824OZP.bigBed
+| 17|  Intestine     |   Mouse    | ENCSR496ZLW | ENCFF751RMP.bed.gz & ENCFF604EPU.bigBed
+| 18|  Intestine     |   Mouse    | ENCSR884KZR | ENCFF556NXC.bed.gz & ENCFF278JOB.bigBed
+| 19|  Intestine     |   Mouse    | ENCSR371LBI | ENCFF931ZNP.bed.gz & ENCFF479RIY.bigBed
 | ----------------| ---------- |-----------  | -------------------------------------
-| Sigmoid colon   |   Human    | ENCSR102HGJ | ENCFF516ZJM.bed.gz & ENCFF244IEB.bigBed
-| Sigmoid colon   |   Human    | ENCSR855THX | ENCFF507HVH.bed.gz & ENCFF386TZM.bigBed
-| Sigmoid colon   |   Human    | ENCSR191LCU | ENCFF277SLP.bed.gz & ENCFF844JZF.bigBed
-| Sigmoid colon   |   Human    | ENCSR328EZS | ENCFF466PWQ.bed.gz & ENCFF057KVE.bigBed
-| Sigmoid colon   |   Human    | ENCSR752MGN | ENCFF322DZO.bed.gz & ENCFF838QAW.bigBed
-| Sigmoid colon   |   Human    | ENCSR300XSY | ENCFF137THP.bed.gz & ENCFF571FOS.bigbed
+| 20| Sigmoid colon   |   Human    | ENCSR102HGJ | ENCFF516ZJM.bed.gz & ENCFF244IEB.bigBed
+| 21| Sigmoid colon   |   Human    | ENCSR855THX | ENCFF507HVH.bed.gz & ENCFF386TZM.bigBed
+| 22| Sigmoid colon   |   Human    | ENCSR191LCU | ENCFF277SLP.bed.gz & ENCFF844JZF.bigBed
+| 23| Sigmoid colon   |   Human    | ENCSR328EZS | ENCFF466PWQ.bed.gz & ENCFF057KVE.bigBed
+| 24| Sigmoid colon   |   Human    | ENCSR752MGN | ENCFF322DZO.bed.gz & ENCFF838QAW.bigBed
+| 25| Sigmoid colon   |   Human    | ENCSR300XSY | ENCFF137THP.bed.gz & ENCFF571FOS.bigbed
 | ----------------| ---------- |-----------  | -------------------------------------
-| Transverse colon|   Human    | ENCSR364HRH | ENCFF164RLV.bed.gz & ENCFF224CJA.bigBed
-| Transverse colon|   Human    | ENCSR884ABV | ENCFF424YXV.bed.gz & ENCFF186HRJ.bigBed
-| Transverse colon|   Human    | ENCSR811EFU | ENCFF937AZG.bed.gz & ENCFF488QJI.bigbed
-| Transverse colon|   Human    | ENCSR019GHX | ENCFF606DOD.bed.gz & ENCFF790PDO.bigBed
+| 26| Transverse colon|   Human    | ENCSR364HRH | ENCFF164RLV.bed.gz & ENCFF224CJA.bigBed
+| 27| Transverse colon|   Human    | ENCSR884ABV | ENCFF424YXV.bed.gz & ENCFF186HRJ.bigBed
+| 28| Transverse colon|   Human    | ENCSR811EFU | ENCFF937AZG.bed.gz & ENCFF488QJI.bigbed
+| 29| Transverse colon|   Human    | ENCSR019GHX | ENCFF606DOD.bed.gz & ENCFF790PDO.bigBed
 | ----------------| ---------- |-----------  | -------------------------------------
-| Colonic mucosa  |   Human    | ENCSR269SMA | ENCFF898UAX.bed.gz & ENCFF389JSK.bigBed
-| Colonic mucosa  |   Human    | ENCSR830QVV | ENCFF316MRH.bed.gz & ENCFF163GCV.bigBed
-| Colonic mucosa  |   Human    | ENCSR834AVK | ENCFF475ITB.bed.gz & ENCFF946AMW.bigBed
+| 30| Colonic mucosa  |   Human    | ENCSR269SMA | ENCFF898UAX.bed.gz & ENCFF389JSK.bigBed
+| 31| Colonic mucosa  |   Human    | ENCSR830QVV | ENCFF316MRH.bed.gz & ENCFF163GCV.bigBed
+| 32| Colonic mucosa  |   Human    | ENCSR834AVK | ENCFF475ITB.bed.gz & ENCFF946AMW.bigBed
 | ----------------| ---------- |-----------  | -------------------------------------
-| Descending colon mucosa|   Human    | ENCSR116DCM | ENCFF632LJU.bed.gz & ENCFF582GTV.bigBed
-| Descending colon mucosa|   Human    | ENCSR417SFM | ENCFF350NWA.bed.gz & ENCFF045ZQC.bigBed
-| Descending colon mucosa|   Human    | ENCSR267EIV | ENCFF095SMO.bed.gz & ENCFF028NAN.bigbed
+| 33| Descending colon mucosa|   Human    | ENCSR116DCM | ENCFF632LJU.bed.gz & ENCFF582GTV.bigBed
+| 34| Descending colon mucosa|   Human    | ENCSR417SFM | ENCFF350NWA.bed.gz & ENCFF045ZQC.bigBed
+| 35| Descending colon mucosa|   Human    | ENCSR267EIV | ENCFF095SMO.bed.gz & ENCFF028NAN.bigbed
 | ----------------| ---------- |----------- | -------------------------------------
-| Left colon|   Human    | ENCSR696WQN | ENCFF318JTT.bed.gz & ENCFF187RLW.bigBed
-| Left colon|   Human    | ENCSR103FRM | ENCFF954AFR.bed.gz & ENCFF046TXU.bigBed
+| 36| Left colon|   Human    | ENCSR696WQN | ENCFF318JTT.bed.gz & ENCFF187RLW.bigBed
+| 37| Left colon|   Human    | ENCSR103FRM | ENCFF954AFR.bed.gz & ENCFF046TXU.bigBed
 | ----------------| ---------- |----------- | -------------------------------------
-| Muscle layer of colon|   Human    | ENCSR196DHC | ENCFF750WMI.bed.gz & ENCFF375JWG.bigBed
-| Muscle layer of colon|   Human    | ENCSR412JVQ | ENCFF360RXI.bed.gz & ENCFF935DDY.bigBed
+| 38| Muscle layer of colon|   Human    | ENCSR196DHC | ENCFF750WMI.bed.gz & ENCFF375JWG.bigBed
+| 39| Muscle layer of colon|   Human    | ENCSR412JVQ | ENCFF360RXI.bed.gz & ENCFF935DDY.bigBed
+| ----------------| ---------- |----------- | -------------------------------------
+| 40| Rectal mucosa|   Human    | ENCSR242DUB | ENCFF842GND.bed.gz & ENCFF141OKN.bigBed
+| 41| Rectal mucosa|   Human    | ENCSR556FAX | ENCFF478BCY.bed.gz & ENCFF738NDA.bigBed
+| ----------------| ---------- |----------- | -------------------------------------
+| 42| Rectal smooth muscle|   Human    | ENCSR843VDL | ENCFF653ZCA.bed.gz & ENCFF620THB.bigBed
 
-**Total human CRE files** = 34
+**Total human cCRE files** = 37
 
-**Total mouse CRE files** = 5
+**Total mouse cCRE files** = 5
 
 Additional information on the data organisation structure within the ENCODE project can be found here: https://www.encodeproject.org/help/data-organization/ 
 
-### Dowload CRE data from ENCODE
+### Dowload cCRE data from ENCODE
 A file containing all of the URLs necessary to download human and mouse CRE data shown in the table above is located in the ```Files``` directory of this repository. To download CRE data run the following code:
 
 ```
