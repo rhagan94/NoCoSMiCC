@@ -74,9 +74,9 @@ Sample number |   Biosample     |   Species  | Accession   | Associated files
 | :--------------:| :--------------:| :---------:|:-----------:|:-----------:
 | 1| Large intestine |   Mouse    | ENCSR557MSF | ENCFF152AFP.bed.gz & ENCFF954ZED.bigBed
 
-**Total human cCRE files** = 37
+**Total human cCRE files** = 23
 
-**Total mouse cCRE files** = 5
+**Total mouse cCRE files** = 1
 
 Additional information on the data organisation structure within the ENCODE project can be found here: https://www.encodeproject.org/help/data-organization/ 
 
