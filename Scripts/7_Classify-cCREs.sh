@@ -102,7 +102,6 @@ awk 'FNR==NR {x[$1];next} ($1 in x)' no2 $genome-CTCF-maxZ.txt | \
     awk '{if ($2 <= 1.28) print $0}' >> CAonly
 
 
-
 echo "Accessioning ccREs..."
 awk 'FNR==NR {x[$1];next} ($4 in x)' PLS $rdhs | \
     awk '{print $1 "\t" $2 "\t" $3 "\t" $4 "\t" "PLS" }' > l.bed
@@ -130,53 +129,4 @@ sort -k1,1 -k2,2n m.bed > l.bed
 
 mv l.bed $genome-cCREs-v3.bed
 
-# Compare the cCREs to ENCODE cCREs
-
-bedtools intersect -wo -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V3/Sigmoid_ENCFF507HVH.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V3_overlap.bed
-
-bedtools intersect -wo -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V4/Transverse_ENCFF218MXI.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V4_overlap.bed
-
-bedtools intersect -v -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V3/Sigmoid_ENCFF507HVH.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V3_no_overlap.bed
-
-bedtools intersect -v -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V4/Transverse_ENCFF218MXI.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V4_no_overlap.bed
-
-
-
-bedtools intersect -wo -f 1 -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V3/Sigmoid_ENCFF507HVH.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V3_overlap.bed
-
-bedtools intersect -wo -f 1 -a /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V4/Transverse_ENCFF218MXI.bed \
--b /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V4_overlap.bed
-
-
-
-
-
-bedtools intersect -wo -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs-v3.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V4/Transverse_ENCFF218MXI.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V4_overlap.bed
-
-wc -l /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V4_overlap.bed
-
-bedtools intersect -v -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs-v3.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V4/Transverse_ENCFF218MXI.bed > /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V4_NO_overlap.bed
-
-wc -l /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/MaxZ/V4_NO_overlap.bed
-
-
-
- # Relative distance
-
- bedtools reldist -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs-v3.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/encode_cres/Human/V4/Transverse_ENCFF218MXI.bed 
-
-
- bedtools reldist -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs-v3.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/dnase_data/Brain/Brain_ENCFF653TDA.bed
-
-bedtools reldist -a /Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs-v3.bed \
--b /Users/ryanhagan/NoCoSMiCC/raw_data/dnase_data/sorted_Trans_ENCFF690KZJ.bed
-
+### END OF PIPELINE
