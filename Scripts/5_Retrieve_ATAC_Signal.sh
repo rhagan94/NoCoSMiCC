@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Download the necessary bigWig files for each sample and store locally
+# Change directory and download the necessary bigWig files for each sample and store locally
 cd /Users/ryanhagan/NoCoSMiCC/raw_data/atac_data/bigWigs
-# Transverse colon
+
 wget https://www.encodeproject.org/files/ENCFF668GUI/@@download/ENCFF668GUI.bigWig &
 wget https://www.encodeproject.org/files/ENCFF033RPN/@@download/ENCFF033RPN.bigWig &
 wget https://www.encodeproject.org/files/ENCFF811ERB/@@download/ENCFF811ERB.bigWig &
