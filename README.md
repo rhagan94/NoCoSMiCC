@@ -37,7 +37,7 @@ wget https:\\
 wget https:\\
 ```
 
-## 2. Mapping of conserved regulatory elements 
+## 2. ENCODE data
 A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in both human and mouse, forming a catalogue of candidate cis-regulatory elements (cCREs). To create a colon-specific regulatory element map for the analysis of CRC somatic mutaions, we adpat the ENCODE cCRE generation pipeline and utilise data originating only from normal colonic tissue.
 
 The following data types are used to generate colon cCREs:
@@ -125,17 +125,101 @@ Additional information on the data organisation structure within the ENCODE proj
 ### Note
 Files containing all of the relevant IDs for each dataset are located in the ```Files``` directory of this repository. These files are used to locate the relevant data for downloading and processing during the pipeline run.
 
+## 3. Running the cCRE generation pipeline
+
 ### Step 1: Generate peaks from scATAC-seq data
 Fragment files are first obtained for each individual sample and used to create arrow files for an ArchR project. Quality control is performed to remove any low-quality cells from the analysis such as doublets and cells with low TSS enrichment and/or number of fragments. Accessibility around marker genes is used to select epithelial cell populations for peak calling - a peak file and bigWig file are created and exported for further analysis.
 
 ```
-./ArchR_analysis.R
+
+./0_Process-sc-fragments.R
+
+```
+### Step 2: Process single cell chromatin accessibility peaks 
+Peaks from the ArchR analysis are filtered and saved as chromatin accessible regions (CARs) for each sample.
 
 ```
 
-### Step 2: Download and process bulk chromatin accessibility data 
+./1_Process-sc-CARs.sh
 
+```
 
+### Step 3: Download and process bulk chromatin accessibility peaks 
+Bulk DNase and ATAC peaks are downloaded from ENCODE, filtered and saved as chromatin accessible regions (CARs) for each sample.
+
+```
+
+./2_Obtain-Bulk-Peaks.sh
+
+```
+
+### Step 4: Process CARs
+The BigWig signal file for each bulk sample is downloaded from ENCODE and used to generate an "output.signal" file using "bigwigaverageoverbed" on the CARs. These are then saved as processed CARs in a separate directory.
+
+```
+
+./3_Process-Bulk-CARs
+
+```
+
+### Step 5: Create representative CARs (rCARs)
+The 10th percentile of average signal over each region is computed seperately for DNase, ATAC and scATAC CARs and the three assays are processed individually:
+
+- Combined into one file
+- Filtered by specific cutoff and Chr names (e.g. ChrM)
+- Sorted and the best peak is picked using the "pick.best.peak.py" script - this is the max signal across all samples
+
+DNase, ATAC and scATAC peaks are then merged and a unique identifier label is added for each region.
+
+```
+
+./4_Create_rCARs
+
+```
+
+### Step 6: Retrieve signals
+Retrieve the average signal over CARs for each of the individual assays
+
+```
+# Dnase
+./5_Retrieve_Dnase_Signal.sh
+
+# Bulk ATAC
+./5_Retrieve_ATAC_Signal.sh
+
+# scATAC
+./5_Retrieve_scATAC_Signal.sh
+
+# H3K27ac
+./5_Retrieve_H3K27ac_Signal.sh
+
+# H3K4me3
+./5_Retrieve_H3K4me3_Signal.sh
+
+# CTCF
+./5_Retrieve_CTCF_Signal.sh
+
+```
+
+### Step 7: Determine max z-scores
+Maximum z-scores for each CAR in all assay types are determined 
+
+```
+
+./6_Determine-Max-Zscores.sh
+
+```
+
+### Step 8: Classify cCREs
+Based on assay signals and position in the genome relative to transcription start sites (TSSs)
+
+```
+
+./7_Classify-cCREs.sh
+
+```
+
+# Additonal analyses
 
 ## Construction of a syntenic regulatory map
 For the next stage of the analysis, a synteny map is constructed using the human, mouse and dog genomes. 
