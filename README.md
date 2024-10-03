@@ -38,29 +38,55 @@ wget https:\\
 ```
 
 ## 2. Mapping of conserved regulatory elements 
-A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in both human and mouse, forming a catalogue of cis-regulatory elements (CREs). To create specific regulatory element maps for the analysis of CRC somatic mutaions in the two species, we utilise data originating only from *normal colonic tissue*.
+A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in both human and mouse, forming a catalogue of candidate cis-regulatory elements (cCREs). To create a colon-specific regulatory element map for the analysis of CRC somatic mutaions, we adpat the ENCODE cCRE generation pipeline and utilise data originating only from normal colonic tissue.
 
-Relevant ENCODE information used in the study is outlined in the table below:
+The following data types are used to generate colon cCREs:
+
+- DNase-seq
+- ATAC-seq
+- scATAC-seq
+- H3K4me3 ChIP-seq
+- H3K27ac ChIP-seq
+- CTCF ChIP-seq
+
+ENCODE colon datasets used in this pipeline are indicated below:
+
+**Assay** = The assay used to generate the data
 
 **Biosample** = The biological material used as input for the experiment.
 
-**Species** = The organism used in the experiment - human or mouse.
+**Accession** = The specific ENCODE experiment from which the data is derived.
 
-**Accession** = The specific ENCODE assay (experiment) from which the data is derived.
+**Associated files** = ENCODE Ids corresponding to relevant files in each sample
 
-**Associated files** = Files available for download for each accession. 
-
-
-|   Biosample     |   Species  | Accession   | Associated files             
+|   Assay     |   Biosample  | Accession   | Associated files             
 | :--------------:| :---------:|:-----------:|:-----------:
-| Large intestine |   Mouse    | ENCSR557MSF | ENCFF152AFP.bed.gz & ENCFF954ZED.bigBed
-| Large intestine |   Human    | ENCSR073QUR | ENCFF024PQS.bed.gz & ENCFF778PTM.bigBed
-| Large intestine |   Human    | ENCSR751PAL | ENCFF034BHY.bed.gz & ENCFF524SID.bigBed
-| Large intestine |   Human    | ENCSR229WYJ | ENCFF572DWG.bed.gz & ENCFF281JFE.bigBed
-| Large intestine |   Human    | ENCSR512QPR | ENCFF205FKB.bed.gz & ENCFF970REE.bigbed
-| Large intestine |   Human    | ENCSR206POU | ENCFF661PLY.bed.gz & ENCFF048AGW.bigBed
-| Large intestine |   Human    | ENCSR834NCV | ENCFF666XFC.bed.gz & ENCFF898SJN.bigBed
-| Large intestine |   Human    | ENCSR389UFY | ENCFF025KEO.bed.gz & ENCFF850JRQ.bigBed
+| Dnase-seq |   Transverse    | ENCSR276ITP | ENCFF274XSP.bed.gz & ENCFF299OOV.bigWig
+| Dnase-seq |   Transverse    | ENCSR340MRJ | ENCFF690KZJ.bed.gz & ENCFF405NTZ.bigWig
+| Dnase-seq |   Transverse    | ENCSR923JYH | ENCFF503AZD.bed.gz & ENCFF753MXL.bigWig
+| Dnase-seq |   Transverse    | ENCSR763AKE | ENCFF903UTH.bed.gz & ENCFF291LZE.bigWig
+| Dnase-seq |   Left colon   | ENCSR279SXQ | ENCFF042YMQ.bed.gz & ENCFF452PQB.bigWig
+| Dnase-seq |   Left colon   | ENCSR867XFA | ENCFF341AEQ.bed.gz & ENCFF613BDA.bigWig
+| ATAC-seq | Transverse | ENCSR386HAZ | ENCFF355GMG.bed.gz & ENCFF668GUI.bigWig
+| ATAC-seq | Transverse | ENCSR404LLJ | ENCFF563UYM.bed.gz & ENCFF033RPN.bigWig
+| ATAC-seq | Transverse | ENCSR761TKU | ENCFF591HMI.bed.gz & ENCFF811ERB.bigWig
+| ATAC-seq | Transverse | ENCSR668VCT | ENCFF054QTC.bed.gz & ENCFF509NRA.bigWig
+| ATAC-seq | Left colon | ENCSR600ZHS | ENCFF009YES.bed.gz & ENCFF057BIJ.bigWig
+| ATAC-seq | Sigmoid | ENCSR355SGJ | ENCFF846PJS.bed.gz & ENCFF961XDO.bigWig
+| ATAC-seq | Sigmoid | ENCSR846VLJ | ENCFF452WBJ.bed.gz & ENCFF784HME.bigWig
+| ATAC-seq | Sigmoid | ENCSR086OGH | ENCFF270JNZ.bed.gz & ENCFF049WJI.bigWig
+| ATAC-seq | Sigmoid | ENCSR548QCP | ENCFF018EMP.bed.gz & ENCFF796DRU.bigWig
+ 
+
+
+
+
+| Dnase-seq |   Human    | ENCSR073QUR | ENCFF024PQS.bed.gz & ENCFF778PTM.bigBed
+| Dnase-seq |   Human    | ENCSR751PAL | ENCFF034BHY.bed.gz & ENCFF524SID.bigBed
+| Dnase-seq |   Human    | ENCSR229WYJ | ENCFF572DWG.bed.gz & ENCFF281JFE.bigBed
+| Dnase-seq |   Human    | ENCSR512QPR | ENCFF205FKB.bed.gz & ENCFF970REE.bigbed
+| Dnase-seq |   Human    | ENCSR206POU | ENCFF661PLY.bed.gz & ENCFF048AGW.bigBed
+
 | Large intestine |   Human    | ENCSR481AZU | ENCFF900LHN.bed.gz & ENCFF169NIT.bigBed
 | Large intestine |   Human    | ENCSR207LTA | ENCFF803TAS.bed.gz & ENCFF362GPG.bigBed
 | Large intestine |   Human    | ENCSR211XAO | ENCFF284MXI.bed.gz & ENCFF063IWT.bigBed
