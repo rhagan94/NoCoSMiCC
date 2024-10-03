@@ -38,7 +38,7 @@ wget https:\\
 ```
 
 ## 2. ENCODE data
-A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in both human and mouse, forming a catalogue of candidate cis-regulatory elements (cCREs). To create a colon-specific regulatory element map for the analysis of CRC somatic mutaions, we adpat the ENCODE cCRE generation pipeline and utilise data originating only from normal colonic tissue.
+A key component of the initial phase of this project is the construction of colorectal regulatory element maps using data from the Encyclopedia of DNA Elements (ENCODE) project (https://www.encodeproject.org/). The ENCODE project aims to deliniate functional elements in the genome and contains integrated data across tissue types in both human and mouse, forming a catalogue of candidate cis-regulatory elements (cCREs). To create a colon-specific regulatory element map for the analysis of CRC somatic mutaions, we adapt the ENCODE cCRE generation pipeline and utilise data originating only from normal colonic tissue.
 
 The following data types are used to generate colon cCREs:
 
