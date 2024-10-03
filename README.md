@@ -122,22 +122,25 @@ ENCODE colon datasets used in this pipeline are indicated below:
 
 Additional information on the data organisation structure within the ENCODE project can be found here: https://www.encodeproject.org/help/data-organization/ 
 
-### Dowload CRE data from ENCODE
-A file containing all of the URLs necessary to download human and mouse CRE data shown in the table above is located in the ```Files``` directory of this repository. To download CRE data run the following code:
+### Note
+Files containing all of the relevant IDs for each dataset are located in the ```Files``` directory of this repository. These files are used to locate the relevant data for downloading and processing during the pipeline run.
+
+### Step 1: Generate peaks from scATAC-seq data
+Fragment files are first obtained for each individual sample and used to create arrow files for an ArchR project. Quality control is performed to remove any low-quality cells from the analysis such as doublets and cells with low TSS enrichment and/or number of fragments. Accessibility around marker genes is used to select epithelial cell populations for peak calling - a peak file and bigWig file are created and exported for further analysis.
 
 ```
-# Create a new directory to store the CRE data files
-mkdir ./raw_data/encode_cres
+./ArchR_analysis.R
 
-# Switch to the new directory and download the data from ENCODE
-cd ./raw_data/encode_cres
-xargs -L 1 curl -O -J -L < ./Files/encode_cre_files.txt
 ```
 
-## 3) Construction of a syntenic regulatory map
+### Step 2: Download and process bulk chromatin accessibility data 
+
+
+
+## Construction of a syntenic regulatory map
 For the next stage of the analysis, a synteny map is constructed using the human, mouse and dog genomes. 
 
-## 4) Construction of TAD maps
+## Construction of TAD maps
 Topologically associated domains (TADs) are evolutionarily conserved and self-interacting regions of the genome with important functions in gene regulation. Using the syntenic colorectal regulatory element map, a TAD map is created to identify elements that are conserved between TAD boundaries in the different species.
 
 
