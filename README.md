@@ -67,6 +67,7 @@ ENCODE colon datasets used in this pipeline are indicated below:
 | Dnase-seq |   Transverse    | ENCSR763AKE | ENCFF903UTH.bed.gz & ENCFF291LZE.bigWig
 | Dnase-seq |   Left colon   | ENCSR279SXQ | ENCFF042YMQ.bed.gz & ENCFF452PQB.bigWig
 | Dnase-seq |   Left colon   | ENCSR867XFA | ENCFF341AEQ.bed.gz & ENCFF613BDA.bigWig
+| ----------------| ---------- |-----------  | -------------------------------------
 | ATAC-seq | Transverse | ENCSR386HAZ | ENCFF355GMG.bed.gz & ENCFF668GUI.bigWig
 | ATAC-seq | Transverse | ENCSR404LLJ | ENCFF563UYM.bed.gz & ENCFF033RPN.bigWig
 | ATAC-seq | Transverse | ENCSR761TKU | ENCFF591HMI.bed.gz & ENCFF811ERB.bigWig
@@ -76,59 +77,40 @@ ENCODE colon datasets used in this pipeline are indicated below:
 | ATAC-seq | Sigmoid | ENCSR846VLJ | ENCFF452WBJ.bed.gz & ENCFF784HME.bigWig
 | ATAC-seq | Sigmoid | ENCSR086OGH | ENCFF270JNZ.bed.gz & ENCFF049WJI.bigWig
 | ATAC-seq | Sigmoid | ENCSR548QCP | ENCFF018EMP.bed.gz & ENCFF796DRU.bigWig
- 
-
-
-
-
-| Dnase-seq |   Human    | ENCSR073QUR | ENCFF024PQS.bed.gz & ENCFF778PTM.bigBed
-| Dnase-seq |   Human    | ENCSR751PAL | ENCFF034BHY.bed.gz & ENCFF524SID.bigBed
-| Dnase-seq |   Human    | ENCSR229WYJ | ENCFF572DWG.bed.gz & ENCFF281JFE.bigBed
-| Dnase-seq |   Human    | ENCSR512QPR | ENCFF205FKB.bed.gz & ENCFF970REE.bigbed
-| Dnase-seq |   Human    | ENCSR206POU | ENCFF661PLY.bed.gz & ENCFF048AGW.bigBed
-
-| Large intestine |   Human    | ENCSR481AZU | ENCFF900LHN.bed.gz & ENCFF169NIT.bigBed
-| Large intestine |   Human    | ENCSR207LTA | ENCFF803TAS.bed.gz & ENCFF362GPG.bigBed
-| Large intestine |   Human    | ENCSR211XAO | ENCFF284MXI.bed.gz & ENCFF063IWT.bigBed
-| Large intestine |   Human    | ENCSR735GNP | ENCFF715SJC.bed.gz & ENCFF118IPF.bigBed
-| Large intestine |   Human    | ENCSR373KEK | ENCFF257QEB.bed.gz & ENCFF312SCY.bigBed
-| Large intestine |   Human    | ENCSR033DHK | ENCFF633GHY.bed.gz & ENCFF661FXP.bigBed
-| Large intestine |   Human    | ENCSR368VZW | ENCFF841KWY.bed.gz & ENCFF669TTI.bigBed
 | ----------------| ---------- |-----------  | -------------------------------------
-|   Intestine     |   Mouse    | ENCSR089NNM | ENCFF974UWG.bed.gz & ENCFF824OZP.bigBed
-|   Intestine     |   Mouse    | ENCSR496ZLW | ENCFF751RMP.bed.gz & ENCFF604EPU.bigBed
-|   Intestine     |   Mouse    | ENCSR884KZR | ENCFF556NXC.bed.gz & ENCFF278JOB.bigBed
-|   Intestine     |   Mouse    | ENCSR371LBI | ENCFF931ZNP.bed.gz & ENCFF479RIY.bigBed
+| H3K27ac | Transverse | ENCSR792VLP | ENCFF741NZM.bigWig
+| H3K27ac | Transverse | ENCSR640XRV | ENCFF532ZGB.bigWig
+| H3K27ac | Transverse | ENCSR069EGE | ENCFF427MZX.bigWig
+| H3K27ac | Transverse | ENCSR208QRN | ENCFF318ECM.bigWig
+| H3K27ac | Sigmoid | ENCSR807XUB | ENCFF608MDC.bigWig
+| H3K27ac | Sigmoid | ENCSR641SDI | ENCFF468UEP.bigWig
+| H3K27ac | Sigmoid | ENCSR937EVN | ENCFF322NLT.bigWig
+| H3K27ac | Sigmoid | ENCSR268ZCF | ENCFF111DLN.bigWig
+| H3K27ac | Sigmoid | ENCSR561YSH | ENCFF124AKT.bigWig
 | ----------------| ---------- |-----------  | -------------------------------------
-| Sigmoid colon   |   Human    | ENCSR102HGJ | ENCFF516ZJM.bed.gz & ENCFF244IEB.bigBed
-| Sigmoid colon   |   Human    | ENCSR855THX | ENCFF507HVH.bed.gz & ENCFF386TZM.bigBed
-| Sigmoid colon   |   Human    | ENCSR191LCU | ENCFF277SLP.bed.gz & ENCFF844JZF.bigBed
-| Sigmoid colon   |   Human    | ENCSR328EZS | ENCFF466PWQ.bed.gz & ENCFF057KVE.bigBed
-| Sigmoid colon   |   Human    | ENCSR752MGN | ENCFF322DZO.bed.gz & ENCFF838QAW.bigBed
-| Sigmoid colon   |   Human    | ENCSR300XSY | ENCFF137THP.bed.gz & ENCFF571FOS.bigbed
+| H3K4me3 | Transverse | ENCSR315EZG | ENCFF487CTD.bigWig
+| H3K4me3 | Transverse | ENCSR557OWY | ENCFF568IBR.bigWig
+| H3K4me3 | Transverse | ENCSR813ZEY | ENCFF252OBP.bigWig
+| H3K4me3 | Transverse | ENCSR933BVL | ENCFF339CRV.bigWig
+| H3K4me3 | Sigmoid | ENCSR960AAL | ENCFF122GSI.bigWig
+| H3K4me3 | Sigmoid | ENCSR793IKH | ENCFF800VAP.bigWig
+| H3K4me3 | Sigmoid | ENCSR172LVU | ENCFF886LUE.bigWig
+| H3K4me3 | Sigmoid | ENCSR900UIP | ENCFF237VMY.bigWig
+| H3K4me3 | Sigmoid | ENCSR421HUB | ENCFF423YBA.bigWig
 | ----------------| ---------- |-----------  | -------------------------------------
-| Transverse colon|   Human    | ENCSR364HRH | ENCFF164RLV.bed.gz & ENCFF224CJA.bigBed
-| Transverse colon|   Human    | ENCSR884ABV | ENCFF424YXV.bed.gz & ENCFF186HRJ.bigBed
-| Transverse colon|   Human    | ENCSR811EFU | ENCFF937AZG.bed.gz & ENCFF488QJI.bigbed
-| Transverse colon|   Human    | ENCSR019GHX | ENCFF606DOD.bed.gz & ENCFF790PDO.bigBed
-| ----------------| ---------- |-----------  | -------------------------------------
-| Colonic mucosa  |   Human    | ENCSR269SMA | ENCFF898UAX.bed.gz & ENCFF389JSK.bigBed
-| Colonic mucosa  |   Human    | ENCSR830QVV | ENCFF316MRH.bed.gz & ENCFF163GCV.bigBed
-| Colonic mucosa  |   Human    | ENCSR834AVK | ENCFF475ITB.bed.gz & ENCFF946AMW.bigBed
-| ----------------| ---------- |-----------  | -------------------------------------
-| Descending colon mucosa|   Human    | ENCSR116DCM | ENCFF632LJU.bed.gz & ENCFF582GTV.bigBed
-| Descending colon mucosa|   Human    | ENCSR417SFM | ENCFF350NWA.bed.gz & ENCFF045ZQC.bigBed
-| Descending colon mucosa|   Human    | ENCSR267EIV | ENCFF095SMO.bed.gz & ENCFF028NAN.bigbed
-| ----------------| ---------- |----------- | -------------------------------------
-| Left colon|   Human    | ENCSR696WQN | ENCFF318JTT.bed.gz & ENCFF187RLW.bigBed
-| Left colon|   Human    | ENCSR103FRM | ENCFF954AFR.bed.gz & ENCFF046TXU.bigBed
-| ----------------| ---------- |----------- | -------------------------------------
-| Muscle layer of colon|   Human    | ENCSR196DHC | ENCFF750WMI.bed.gz & ENCFF375JWG.bigBed
-| Muscle layer of colon|   Human    | ENCSR412JVQ | ENCFF360RXI.bed.gz & ENCFF935DDY.bigBed
+| CTCF | Transverse | ENCSR449SEF | ENCFF626YRZ.bigWig
+| CTCF | Transverse | ENCSR907BES | ENCFF435CDF.bigWig
+| CTCF | Transverse | ENCSR236YGF | ENCFF686TFX.bigWig
+| CTCF | Transverse | ENCSR608WPS | ENCFF646EZE.bigWig
+| CTCF | Transverse | ENCSR558HTE | ENCFF349LWW.bigWig
+| CTCF | Transverse | ENCSR769WKR | ENCFF493XMW.bigWig
+| CTCF | Transverse | ENCSR833FWC | ENCFF517GQE.bigWig
+| CTCF | Transverse | ENCSR102CSD | ENCFF170KVV.bigWig
+| CTCF | Sigmoid | ENCSR857RJQ | ENCFF634JUC.bigWig
+| CTCF | Sigmoid | ENCSR925GDS | ENCFF154FOF.bigWig
+| CTCF | Sigmoid | ENCSR721AHD | ENCFF460ECX.bigWig
+| CTCF | Sigmoid | ENCSR222SQE | ENCFF985EXZ.bigWig
 
-**Total human CRE files** = 34
-
-**Total mouse CRE files** = 5
 
 Additional information on the data organisation structure within the ENCODE project can be found here: https://www.encodeproject.org/help/data-organization/ 
 
