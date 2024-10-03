@@ -6,7 +6,7 @@ genome=hg38
 # Define the data directory, script directory, and hotspots file
 dataDir=/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/$genome-rCARs
 scriptDir=/Users/ryanhagan/NoCoSMiCC/Scripts/Custom_ENCODE_Pipeline_V1
-peaks=/Users/ryanhagan/NoCoSMiCC/Files/peaks-to-run.txt
+peaks=/Users/ryanhagan/NoCoSMiCC/Files/ENCODE-bulk-peaks.txt
 
 # Loop through each line in the hotspots file
 while IFS=$'\t' read -r dset dpeak dsig _; do
