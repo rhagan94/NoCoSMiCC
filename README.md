@@ -110,7 +110,15 @@ ENCODE colon datasets used in this pipeline are indicated below:
 | CTCF | Sigmoid | ENCSR925GDS | ENCFF154FOF.bigWig
 | CTCF | Sigmoid | ENCSR721AHD | ENCFF460ECX.bigWig
 | CTCF | Sigmoid | ENCSR222SQE | ENCFF985EXZ.bigWig
-
+| ----------------| ---------- |-----------  | -------------------------------------
+| scATAC-seq | Transverse | ENCSR997YNO | ENCFF490PBS.fragments.tsv.gz
+| scATAC-seq | Transverse | ENCSR506YMX | ENCFF389FMC.fragments.tsv.gz
+| scATAC-seq | Transverse | ENCSR434SXE | ENCFF888LMJ.fragments.tsv.gz 
+| scATAC-seq | Transverse | ENCSR349XKD | ENCFF551UBJ.fragments.tsv.gz 
+| scATAC-seq | Sigmoid | ENCSR388NCA | ENCFF994HOW.fragments.tsv.gz 
+| scATAC-seq | Sigmoid | ENCSR367GKP | ENCFF010JFQ.fragments.tsv.gz 
+| scATAC-seq | Left colon | ENCSR916RYB | ENCFF810NQZ.fragments.tsv.gz 
+| scATAC-seq | Left colon | ENCSR830FPR | ENCFF040VYY.fragments.tsv.gz 
 
 Additional information on the data organisation structure within the ENCODE project can be found here: https://www.encodeproject.org/help/data-organization/ 
 
