@@ -8,7 +8,7 @@ dataDir=/Users/ryanhagan/NoCoSMiCC/ArchR_analysis
 scriptDir=/Users/ryanhagan/NoCoSMiCC/Scripts/Custom_ENCODE_Pipeline_V1
 samples=/Users/ryanhagan/NoCoSMiCC/Files/singlecell-to-run.txt
 signalDir=/Users/ryanhagan/NoCoSMiCC/ArchR_analysis/GroupBigWigs
-outdir=/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/$genome-rCARs
+outdir=/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/sc-only-rCARs
 
 # Loop through each line in the hotspots file
 while IFS=$'\t' read -r dset; do
