@@ -1,29 +1,35 @@
 genome=hg38
 
-dataDir=/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/$genome-rCARs
-rdhs=$dataDir/$genome-rCARs-v3-labelled.bed
+dataDir=/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/sc-only-rCARs
+rdhs=$dataDir/sc-only-rCARs-labelled.bed
 scriptDir=/Users/ryanhagan/NoCoSMiCC/Scripts/ENCODE_cCRE_pipeline_replication
 
 cd $dataDir/MaxZ
 
+# Sort the TSS bed file
+bedtools sort -i /Users/ryanhagan/NoCoSMiCC/Files/hg38_tss.bed > /Users/ryanhagan/NoCoSMiCC/Files/hg38_tss_sorted.bed
+
 # Create the necessary TSS files for annotation
-bedtools slop -i /Users/ryanhagan/NoCoSMiCC/Files/hg38_tss.bed -g /Users/ryanhagan/NoCoSMiCC/Files/hg38.chrom.sizes.txt -b 2000 > /Users/ryanhagan/NoCoSMiCC/Files/Hg38_TSS.Basic.4k.bed
+bedtools slop -i /Users/ryanhagan/NoCoSMiCC/Files/hg38_tss_sorted.bed -g /Users/ryanhagan/NoCoSMiCC/Files/hg38.chrom.sizes.txt -b 2000 > /Users/ryanhagan/NoCoSMiCC/Files/Hg38_TSS.Basic.4k.bed
+
+# remove chrM
+grep -v "chrM" /Users/ryanhagan/NoCoSMiCC/Files/Hg38_TSS.Basic.4k.bed > /Users/ryanhagan/NoCoSMiCC/Files/Hg38_TSS.Basic.4k_no_chrM.bed
 
 if [[ $genome == "mm10" ]]
 then
-    prox=/Users/ryanhagan/NoCoSMiCC/Files/hg38_tss_4k.bed
-    tss=/Users/ryanhagan/NoCoSMiCC/Files/hg38_tss.bed
+    prox=/Users/ryanhagan/NoCoSMiCC/Files/Hg38_TSS.Basic.4k_no_chrM.bed
+    tss=/Users/ryanhagan/NoCoSMiCC/Files/hg38_tss_sorted.bed
     ChromInfo=~/Lab/Reference/Mouse/ChromInfo.txt
 elif [[ $genome == "hg38" ]]
 then
-    prox=/Users/ryanhagan/NoCoSMiCC/Files/hg38_tss_4k.bed
-    tss=/Users/ryanhagan/NoCoSMiCC/Files/hg38_tss.bed
+    prox=/Users/ryanhagan/NoCoSMiCC/Files/Hg38_TSS.Basic.4k_no_chrM.bed
+    tss=/Users/ryanhagan/NoCoSMiCC/Files/hg38_tss_sorted.bed
     #ChromInfo=~/Lab/Reference/Human/hg38/chromInfo.txt
 fi
 
 echo "Splitting cCREs into groups..."
 sed 's/\t$//' $rdhs > rdhs-cleaned.bed
-awk '{if ($2 > 1.28) print $0}' $genome-DNase-maxZ.txt > list
+awk '{if ($2 > 1.28) print $0}' $genome-scATAC-maxZ.txt > list
 awk 'FNR==NR {x[$1];next} ($4 in x)' list rdhs-cleaned.bed > bed
 bedtools intersect -u -a bed -b $tss > tss
 bedtools intersect -v -a bed -b $tss > a1
@@ -127,6 +133,6 @@ awk 'FNR==NR {x[$1];next} !($4 in x)' CTCFall l.bed | \
 
 sort -k1,1 -k2,2n m.bed > l.bed
 
-mv l.bed $genome-cCREs-v3.bed
+mv l.bed sc-only-cCREs.bed
 
 ### END OF PIPELINE
