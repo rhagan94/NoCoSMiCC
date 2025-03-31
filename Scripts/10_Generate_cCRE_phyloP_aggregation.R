@@ -1,4 +1,4 @@
-# This script is for making aggregation plot for given cCRE phyloP matrix - adapted from Kaili Fan code
+# This script is for making aggregation plot for given cCRE phyloP matrix - adapted from:
 
 # -- Kaili Fan
 # fankaili.bio@gmail.com
@@ -8,116 +8,15 @@
 # Load ggplot
 library(ggplot2)
 
-
-
+# Load the PhyloP matrix
 phyloP241_matrix = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/Outputs/phyloP241_matrix.mtx"
 
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/cCRE_lifted"
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/cCRE_dog_lifted"
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Synteny/syntenic_cCREs.bed"
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Synteny/nonsyntenic_cCREs.bed"
+# Define the cCRE file
+cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/sc-only-lifted-cCREs-2025.bed"
 
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/cCRE_unlifted"
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/cCRE_dog_unlifted"
-
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/liftover-syntenic-cCREs.bed"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/cCRE_mouse_lifted_strict"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/colon_TAD_overlaps.bed"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/TAD_Analysis/Outputs/cCRE_domains_overlap.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/TAD_Analysis/Outputs/cCRE_domains_no_overlap.bed"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/TAD_Analysis/Outputs/G1_cCREs_in_TADs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/TAD_Analysis/Outputs/G1_cCREs_NOT_in_TADs.bed"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/Conserved_colon_G1_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/Evolving_colon_G2_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/Primate_colon_G3_cCREs.bed"
-
-cCRE_file = "/Users/ryanhagan/Downloads/exon_cCRE_overlap.bed"
-cCRE_file = "/Users/ryanhagan/Downloads/exon_cCRE_complete_overlap.bed"
-cCRE_file = "/Users/ryanhagan/Downloads/exon_cCRE_no_overlap.bed"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/compartment_A_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/compartment_B_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/compartment_I_cCREs.bed"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/hg38_random_10k_250bp.bed"
-
-## new phase of the analysis - separate single cell and bulk
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/single_cell_compartment_A_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/single_cell_compartment_B_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/single_cell_compartment_I_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Synteny/sc_compA_lift_synt.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/sc_liftover_compA_synt_G1_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/sc_compA_lifted.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/sc-only-rCARs/sc_bulk_nonOverlap_cCREs.bed"
-
-
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/bulk_compartment_A_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/bulk_compartment_B_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/HiC_Analysis/bulk_compartment_I_cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Synteny/bulk_compA_lift_synt.bed"
-
-output_fig = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/Outputs/PhyloP_Aggregation_plot"
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/sc-only-rCARs/MaxZ/hg38-cCREs-sc-only-lifted.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/sc-only-rCARs/MaxZ/hg38-cCREs-sc-only.bed"
-
-df_1 <- read.table(cCRE_file)
-head(df_1)
-df_2 <- read.table(cCRE_file)
-head(df_2)
-
-excluded_ids <- df_1$V4
-
-# Subset df_2 to keep only rows where V4 is NOT in df_1$V4
-df_2_subset <- df_2[!df_2$V4 %in% excluded_ids, ]
-
-df <- df_2_subset
-
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/sc-G1-lifted-cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/sc-G1-cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/sc-G2-cCREs.bed"
-cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/sc-G3-cCREs.bed"
-
-####################
-#dat1 = read.table(phyloP100_matrix, row.names = 1)
+# Process the data
 df = read.table(cCRE_file)
 dat2 = read.table(phyloP241_matrix, row.names =1)
-
-#dat1_pls = dat1[df[df$V5=="PLS",]$V4,]
-#d1_pls = data.frame(apply(dat1_pls,2,mean))
-#d1_pls$ccre = "PLS"
-#d1_pls$loci = 1:500
-#d1_pls$phyloP = "phyloP100"
-#
-#dat1_pels = dat1[df[df$V5=="pELS",]$V4,]
-#d1_pels = data.frame(apply(dat1_pels,2,mean))
-#d1_pels$ccre = "pELS"
-#d1_pels$loci = 1:500
-#d1_pels$phyloP = "phyloP100"
-#
-#dat1_dels = dat1[df[df$V5=="dELS",]$V4,]
-#d1_dels = data.frame(apply(dat1_dels,2,mean))
-#d1_dels$ccre = "dELS"
-#d1_dels$loci = 1:500
-#d1_dels$phyloP = "phyloP100"
-#
-#dat1_dnase = dat1[df[df$V5=="DNase-H3K4me3",]$V4,]
-#d1_dnase = data.frame(apply(dat1_dnase,2,mean))
-#d1_dnase$ccre = "DNase-H3K4me3"
-#d1_dnase$loci = 1:500
-#d1_dnase$phyloP = "phyloP100"
-#
-#dat1_ctcf = dat1[df[df$V5=="CTCF-only",]$V4,]
-#d1_ctcf = data.frame(apply(dat1_ctcf,2,mean))
-#d1_ctcf$ori = "CTCF-only"
-#d1_ctcf$ccre = 1:500
-#d1_ctcf$phyloP = "phyloP100"
 #
 dat2_pls = dat2[df[df$V5=="PLS" | df$V5=="PLS,CTCF-bound",]$V4,]
 d2_pls = data.frame(apply(dat2_pls,2,mean))
@@ -174,7 +73,7 @@ ggplot(d, aes(x=loci, y=score,col=cCRE)) +
   geom_hline(yintercept = 0.186608, col="#a1a1a1", linetype="solid") +
   geom_hline(yintercept = 0.0817535, col="#a1a1a1", linetype="dashed") +
   geom_hline(yintercept = mean(d$score), col="black", linetype="dashed") +
-  ggtitle("G3-overlapping colon cCREs") + 
+  ggtitle("All lifted colon cCREs") + 
  ylim(-0.1, 1.6)+
   theme(plot.title = element_text(hjust = 0.5, face="bold"),
         axis.text.x = element_text(face="bold"),
@@ -186,10 +85,6 @@ ggplot(d, aes(x=loci, y=score,col=cCRE)) +
 
 
 ## Pie charts
-
-# Read the cCRE file
-cCRE_file <- "/Users/ryanhagan/NoCoSMiCC/Zoonomia/sc-G2-cCREs.bed"
-df <- read.table(cCRE_file, header = FALSE, stringsAsFactors = FALSE)
 
 # Define column names
 colnames(df) <- c("Chromosome", "Start", "End", "ID", "Category")
@@ -231,18 +126,3 @@ ggplot(cCRE_df, aes(x = "", y = Count, fill = Category)) +
                   point.padding = 0.5) +
   theme(legend.position = "none") 
 
-
-# Assuming cCRE_df has 'Percent' and 'Count' already calculated
-cCRE_df$Percent <- cCRE_df$Count / sum(cCRE_df$Count) * 100
-
-# Create the pie chart with labels inside each wedge
-ggplot(cCRE_df, aes(x = "", y = Count, fill = Category)) +
-  geom_bar(width = 1, stat = "identity", color = "white") + 
-  coord_polar(theta = "y") +  # Keeps the pie chart
-  scale_fill_manual(values = cCRE_colors) + 
-  theme_void() + 
-  # Add the labels showing the Category and percentage of the total
-  geom_text(aes(label = paste0(Category, "\n", round(Percent, 1), "%")),
-            position = position_stack(vjust = 0.5), 
-            color = "black") +  # Label text color
-  theme(legend.position = "none")  # Hide the legend
