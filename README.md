@@ -218,6 +218,7 @@ Based on assay signals and position in the genome relative to transcription star
 ./7_Classify-cCREs.sh
 
 ```
+![cCRE_example](https://github.com/user-attachments/assets/706e6311-5911-46e1-9806-06c08f92b7e6)
 
 # Additonal analyses
 
