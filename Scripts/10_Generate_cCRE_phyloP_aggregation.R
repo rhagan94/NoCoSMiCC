@@ -1,17 +1,17 @@
+# This script is for making aggregation plot for given cCRE phyloP matrix - adapted from Kaili Fan code
 
 # -- Kaili Fan
 # fankaili.bio@gmail.com
 # Weng Lab, UMass Chan Med
 # Jun, 2022
 
-# This script is for making aggregation plot for given cCRE phyloP matrix.
-
+# Load ggplot
 library(ggplot2)
 
-#args = commandArgs(trailingOnly=TRUE)
-#phyloP100_matrix = args[1]
+
+
 phyloP241_matrix = "/Users/ryanhagan/NoCoSMiCC/Zoonomia/Outputs/phyloP241_matrix.mtx"
-#cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs-v3.bed"
+
 #cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/cCRE_lifted"
 #cCRE_file = "/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/cCRE_dog_lifted"
 #cCRE_file = "/Users/ryanhagan/NoCoSMiCC/Synteny/syntenic_cCREs.bed"
