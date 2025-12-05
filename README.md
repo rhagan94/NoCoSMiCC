@@ -1,13 +1,54 @@
-# NoCoSMiCC - Non-Coding Somatic Mutations in Colorectal Cancer
+<div align="center">
 
-This repository contains the files and scripts required to enable reproduction of the analysis described in:
+# 🧬 NoCoSMiCC
+### Non-Coding Somatic Mutations in Colorectal Cancer
 
-(link to publication)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![DOI](https://img.shields.io/badge/DOI-pending-lightgrey.svg)](link-to-publication)
+[![Genomics](https://img.shields.io/badge/Field-Cancer%20Genomics-purple.svg)]()
 
-### Abstract
-Colorectal cancer (CRC) is a significant malignancy, representing the third most common cancer type and second most fatal globally. The identification of driver mutations in CRC genomes is a major research area and has a key role in facilitating the understanding of colon tumour development. Although the landscape of coding drivers has been relatively well studied, significantly less is known about the role of mutations in non-coding regions. However, recent large-scale projects have produced data that can address bottlenecks associated with the identification of non-coding driver mutations. For example, Whole genome sequencing (WGS) data availability has increased substantially, and thousands of datasets are now accessible across many cancer types, including CRC. In addition, knowledge of the non-coding genome has improved through initiatives such as the ENCODE project, which have enabled the characterisation of regulatory elements across diverse cell and tissue types.
+*A comprehensive analysis for identifying non-coding driver mutations in colorectal cancer using 5,000+ whole genomes and tissue-specific regulatory maps*
 
-In this study, we utilised the ENCODE database to collate data from human colon tissue and developed a pipeline to generate a catalogue of candidate cis-regulatory elements (cCREs). Additionally, we explored single cell chromatin accessibility data from the human biomolecular atlas program (HubMAP) to identify thousands of cCREs found specifically in colon epithelial cells and categorised these elements (e.g. enhancers) through integration with histone and transcription factor ChIP-seq data. Further analysis of our colon epithelial cCREs revealed differences in synteny and conservation scores (phyloP) across 241 mammals, providing insight into the potential functional significance of these elements.
+[Publication](#) • [Documentation](#) • [Data Access](#data-access)
+
+</div>
+
+---
+
+## 🔬 Overview
+
+NoCoSMiCC identifies non-coding somatic driver mutations in colorectal cancer (CRC) by integrating multi-modal regulatory genomics data with large-scale whole genome sequencing [web:1][web:26]. This pipeline generates colon-specific candidate cis-regulatory element (cCRE) maps and analyzes >3,000 CRC genomes to discover functional non-coding mutations.
+
+**Key Features:**
+- 🎯 Tissue-specific regulatory element identification from scATAC-seq, ChIP-seq, and bulk accessibility data
+- 🧪 Integration of ENCODE, HuBMAP, and published datasets
+- 🔍 Analysis of >3,000 CRC whole genomes across multiple cohorts
+- 📊 Evolutionary conservation and synteny analysis across 241 mammals
+- 🏗️ TAD-aware regulatory element mapping
+
+## 📊 Citation
+
+If you use NoCoSMiCC in your research, please cite:
+
+@article{nocosmcc2025,
+title={Non-Coding Somatic Mutations in Colorectal Cancer},
+author={Your Name et al.},
+journal={Journal Name},
+year={2025},
+doi={pending}
+}
+
+## 🚀 Quick Start
+Clone the repository
+git clone https://github.com/yourusername/NoCoSMiCC.git
+cd NoCoSMiCC
+
+Install dependencies
+conda env create -f environment.yml
+conda activate nocosmcc
+
+Run the cCRE generation pipeline
+./scripts/run_pipeline.sh
 
 ### Dependencies
 
