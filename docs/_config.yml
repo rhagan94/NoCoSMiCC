@@ -1,3 +1,10 @@
-title: "NoCoSMiCC"
-description: "Non-coding somatic driver discovery in colorectal cancer with CNV-aware background mutation-rate modeling."
-remote_theme: mmistakes/minimal-mistakes
+title: NoCoSMiCC
+description: Non-coding somatic mutations in colorectal cancer
+theme: jekyll-theme-cayman
+
+# If your site URL is https://rhagan94.github.io/NoCoSMiCC
+baseurl: "/NoCoSMiCC"
+url: "https://rhagan94.github.io"
+
+# Optional Cayman settings
+show_downloads: false
