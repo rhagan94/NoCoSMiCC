@@ -3,13 +3,5 @@
 
 @import "{{ site.theme }}";
 
-/* Typography */
-body { font-size: 17px; line-height: 1.65; }
-h1, h2, h3 { letter-spacing: -0.02em; }
+/* Put any custom CSS below this line */
 
-/* Hero-ish header feel */
-.page-header { padding: 3rem 1rem; }
-.main-content { max-width: 980px; }
-
-/* Links */
-a { text-decoration-thickness: 2px; text-underline-offset: 3px; }
