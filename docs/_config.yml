@@ -1,0 +1,5 @@
+title: "NoCoSMiCC"
+description: "Non-coding somatic driver discovery in colorectal cancer with CNV-aware background mutation-rate modeling."
+remote_theme: pages-themes/minimal@v0.2.0
+plugins:
+  - jekyll-remote-theme
