@@ -26,5 +26,9 @@ feature_row:
     excerpt: "Mutation-enrichment testing of candidate regulatory elements with prioritisation for follow-up."
 ---
 
-{% include feature_row %}
+## What this project does
+- Builds genome-wide background mutation-rate models over fixed bins.
+- Tests candidate regulatory regions for mutation enrichment beyond expectation.
+- Tracks confounders (e.g., CNV) to avoid artefactual “drivers”.
+
 
