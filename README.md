@@ -17,12 +17,12 @@
 
 ## 🔬 Overview
 
-NoCoSMiCC identifies non-coding somatic driver mutations in colorectal cancer (CRC) by integrating multi-modal regulatory genomics data with large-scale whole genome sequencing [web:1][web:26]. This pipeline generates colon-specific candidate cis-regulatory element (cCRE) maps and analyzes >3,000 CRC genomes to discover functional non-coding mutations.
+NoCoSMiCC aims to identify non-coding somatic driver mutations in colorectal cancer (CRC) by integrating multi-modal regulatory genomics data with large-scale whole genome sequencing [web:1][web:26]. This pipeline generates colon-specific candidate cis-regulatory element (cCRE) maps and analyzes >5,000 CRC genomes to discover functional non-coding mutations.
 
 **Key Features:**
-- 🎯 Tissue-specific regulatory element identification from scATAC-seq, ChIP-seq, and bulk accessibility data
+- 🎯 Tissue-specific regulatory element identification from scATAC-seq, and histone/TF ChIP-seq
 - 🧪 Integration of ENCODE, HuBMAP, and published datasets
-- 🔍 Analysis of >3,000 CRC whole genomes across multiple cohorts
+- 🔍 Analysis of somatic mutations in >5,000 CRC whole genomes across multiple cohorts
 - 📊 Evolutionary conservation and synteny analysis across 241 mammals
 - 🏗️ TAD-aware regulatory element mapping
 
@@ -30,9 +30,9 @@ NoCoSMiCC identifies non-coding somatic driver mutations in colorectal cancer (C
 
 If you use NoCoSMiCC in your research, please cite:
 
-@article{nocosmcc2025,
+@article{nocosmcc2026,
 title={Non-Coding Somatic Mutations in Colorectal Cancer},
-author={Your Name et al.},
+author={Hagan et al.},
 journal={Journal Name},
 year={2025},
 doi={pending}
