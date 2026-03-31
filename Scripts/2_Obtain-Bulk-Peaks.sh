@@ -24,7 +24,7 @@ while IFS=$'\t' read -r exp peaks _; do
 
         gunzip "$peaks.bed.gz"
 
-        awk '{if ($3-$2 >= 20 && $3-$2 <= 1000) print $0}' "$peaks.bed" > peaks
+        awk '{if ($3-$2 >= 100 && $3-$2 <= 1000) print $0}' "$peaks.bed" > peaks
 
         mkdir -p "$dataDir/CARs"
 
