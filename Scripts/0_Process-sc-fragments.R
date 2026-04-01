@@ -128,15 +128,15 @@ proj_Colon_Filt <- addUMAP(
 )
 
 # Plot UMAP by sample and clusters
-p1 <- plotEmbedding(ArchRProj = proj_Colon_Filt, 
+sample_umap <- plotEmbedding(ArchRProj = proj_Colon_Filt, 
                     colorBy = "cellColData", 
                     name = "Sample", embedding = "UMAP")
 
-p2 <- plotEmbedding(ArchRProj = proj_Colon_Filt, 
+cluster_umap <- plotEmbedding(ArchRProj = proj_Colon_Filt, 
                     colorBy = "cellColData", 
                     name = "Clusters", embedding = "UMAP")
 
-ggAlignPlots(p1, p2, type = "h")
+ggAlignPlots(sample_umap, cluster_umap, type = "h")
 
 # Add group coverages to the ArchR project based on Clusters
 #proj_Colon_Filt <- addGroupCoverages(ArchRProj = proj_Colon_Filt, groupBy = "Clusters")
@@ -309,3 +309,151 @@ saveArchRProject(ArchRProj = proj_epithelial, outputDirectory = "/Users/ryanhaga
 # loadArchRProject(path = "/Users/ryanhagan/NoCosMiCC/ArchR_analysis")
 
 # END OF SCRIPT
+
+
+
+
+## New function for calling epithelial cells
+# ============================================================
+# Epithelial Cluster Identification and Extraction Pipeline
+# ============================================================
+
+# Define marker lists
+
+epithelialMarkers <- c(
+  # General epithelial
+  "EPCAM", "KRT8", "KRT18", "CDH1",
+  # Colonocyte/absorptive
+  "CA1", "SLC26A2", "SLC26A3", "RAB6B", "FABP1",
+  # Best4+ enterocytes
+  "BEST4", "CA7", "OTOP2", "OTOP3",
+  # Goblet
+  "MUC2", "TFF1", "FCGBP", "FFAR4", "CLCA1", "RETNLB", "SPINK4", "AGR2",
+  # Immature goblet
+  "KLK1", "ITLN1", "WFDC2", "LRRC26",
+  # Stem
+  "SMOC2", "LGR5", "ASCL2", "SOX9", "RGMB",
+  # Cycling TA
+  "TICRR", "CDC25C",
+  # Enteroendocrine
+  "CHGA", "NEUROD1", "SCGN", "FEV", "PYY",
+  # Tuft
+  "TRPM5", "GNG13", "DCLK1", "LRMP",
+  # Paneth
+  "DEFA5", "DEFA6", "LYZ", "REG3A",
+  # M cells
+  "GP2", "TNFRSF11A"
+)
+
+nonEpithelialMarkers <- c(
+  # Pan-immune
+  "PTPRC",
+  # T cells
+  "CD3D", "CD3E", "CD3G", "CD8A", "CD8B", "CD4", "CD2", "IL7R",
+  # Tregs
+  "FOXP3", "CTLA4", "BATF",
+  # Exhausted T
+  "PDCD1", "HAVCR2", "LAG3", "TOX",
+  # Th17
+  "IL17A", "KLRB1",
+  # NK
+  "KLRF1", "NCAM1", "SH2D1B",
+  # B cells
+  "PAX5", "MS4A1", "CD19",
+  # Plasma
+  "IGLL1", "MZB1", "JCHAIN", "SSR4",
+  # GC B cells
+  "FCRLA", "CD180",
+  # Mast
+  "TPSAB1", "CMA1", "GATA2", "HDC",
+  # Monocyte/macrophage
+  "CD14", "CD68", "FCGR1A", "LILRB2", "FOLR2",
+  # DC
+  "CLEC9A", "ITGAX", "LY75",
+  # Cycling immune
+  "MKI67", "TOP2A",
+  # Fibroblasts
+  "COL1A1", "COL1A2", "COL6A1", "FAP", "DCN", "CBLN2",
+  # Inflammatory fibroblasts
+  "MMP3", "MMP1", "CHI3L1",
+  # Myofibroblasts
+  "MYH11", "TAGLN", "ACTA2", "DES",
+  # Endothelial
+  "VWF", "CDH5", "PLVAP", "PECAM1",
+  # Post-capillary venules
+  "SELP", "MADCAM1",
+  # Pericytes
+  "RGS5", "MCAM", "NOTCH3", "KCNJ8",
+  # Schwann/neural
+  "S100B", "SOX10", "MBP", "MAP2",
+  # Interstitial cells of Cajal
+  "ANO1"
+)
+
+# Define function for epithelial scoring
+
+scoreClustersByMarkers <- function(ArchRProj, groupBy = "Clusters",
+                                   positiveMarkers, negativeMarkers) {
+  
+  markerGS <- getMarkerFeatures(
+    ArchRProj = ArchRProj,
+    useMatrix = "GeneScoreMatrix",
+    groupBy = groupBy,
+    bias = c("TSSEnrichment", "log10(nFrags)"),
+    testMethod = "wilcoxon"
+  )
+  
+  log2fc <- assay(markerGS, "Log2FC")
+  rownames(log2fc) <- rowData(markerGS)$name
+  
+  # Report how many markers were found
+  cat("Epithelial markers found:", sum(positiveMarkers %in% rownames(log2fc)),
+      "of", length(positiveMarkers), "\n")
+  cat("Non-epithelial markers found:", sum(negativeMarkers %in% rownames(log2fc)),
+      "of", length(negativeMarkers), "\n")
+  
+  clusterScores <- sapply(colnames(log2fc), function(cluster) {
+    
+    posFound <- positiveMarkers[positiveMarkers %in% rownames(log2fc)]
+    negFound <- negativeMarkers[negativeMarkers %in% rownames(log2fc)]
+    
+    posScore <- mean(log2fc[posFound, cluster], na.rm = TRUE)
+    negScore <- mean(log2fc[negFound, cluster], na.rm = TRUE)
+    
+    posScore - negScore
+  })
+  
+  return(sort(clusterScores, decreasing = TRUE))
+}
+
+# Run scoring
+
+# Score clusters
+clusterScores <- scoreClustersByMarkers(
+  ArchRProj = proj_Colon_Filt,
+  groupBy = "Clusters",
+  positiveMarkers = epithelialMarkers,
+  negativeMarkers = nonEpithelialMarkers
+)
+
+cat("\nCluster scores:\n")
+print(clusterScores)
+
+# Find epithelial clusters
+epithelialClusters <- names(clusterScores[clusterScores > 0])
+
+# Subset to epithelial clusters
+cat("\nSubsetting to epithelial clusters:", epithelialClusters, "\n")
+
+proj_epithelial <- subsetArchRProject(
+  ArchRProj = proj_Colon_Filt,
+  cells = getCellNames(proj_Colon_Filt)[proj_Colon_Filt$Clusters %in% epithelialClusters],
+  outputDirectory = "ArchR_epithelial",
+  dropCells = TRUE,
+  force = TRUE
+)
+
+cat("\nEpithelial project summary:\n")
+print(proj_epithelial)
+
+
