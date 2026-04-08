@@ -457,3 +457,218 @@ cat("\nEpithelial project summary:\n")
 print(proj_epithelial)
 
 
+
+
+#############################################################################################
+##########################             2026 Update                  #########################
+#############################################################################################
+
+# Script for ArchR project creation using ENCODE and HuBMAP scATAC datasets
+# Adapted from Hickey et al. 2023 (doi:10.1038/s41586-023-05915-x)
+
+############################################################################################################################
+#..........................................................................................................................#
+############################################################################################################################
+# Load packages
+library(ArchR)
+library(Seurat)
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(parallel)
+'%notin%' <- Negate('%in%')
+
+# Load Genome Annotations
+addArchRGenome("hg38")
+
+# Set Threads to be used
+addArchRThreads(threads = 96)
+
+# Set/Create Working Directory to Folder
+setwd("/project/home/p201120/ryan/cCRE_pipeline/outputs/ArrowFiles")
+
+fragDir <- "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/"
+
+############################################################################################################################
+#..........................................................................................................................#
+############################################################################################################################
+# Paths to ENCODE and HuBMAP fragment files
+
+inputFiles1K <- c(
+  "B006-A-001"    = paste0(fragDir, "B006-A-001_atac_fragments.tsv.gz"),
+  "B006-A-101"    = paste0(fragDir, "B006-A-101_atac_fragments.tsv.gz"),
+  "B006-A-201-R2" = paste0(fragDir, "B006-A-201-R2_atac_fragments.tsv.gz"),
+  "ENCSR916RYB"   = paste0(fragDir, "ENCSR916RYB.fragments.tsv.gz"),
+  "ENCSR904WIW"   = paste0(fragDir, "ENCSR904WIW.fragments.tsv.gz"),
+  "ENCSR830FPR"   = paste0(fragDir, "ENCSR830FPR.fragments.tsv.gz")
+)
+
+inputFiles1p5K <- c(
+  "B001-A-302" = paste0(fragDir, "B001-A-302_atac_fragments.tsv.gz"),
+  "B001-A-401" = paste0(fragDir, "B001-A-401_atac_fragments.tsv.gz"),
+  "B001-A-406" = paste0(fragDir, "B001-A-406_atac_fragments.tsv.gz"),
+  "B001-A-501" = paste0(fragDir, "B001-A-501_atac_fragments.tsv.gz")
+)
+
+inputFiles2K <- c(
+  "B004-A-004" = paste0(fragDir, "B004-A-004_atac_fragments.tsv.gz"),
+  "B008-A-001" = paste0(fragDir, "B008-A-001_atac_fragments.tsv.gz"),
+  "ENCSR997YNO" = paste0(fragDir, "ENCSR997YNO.fragments.tsv.gz"),
+  "ENCSR007QIO" = paste0(fragDir, "ENCSR007QIO.fragments.tsv.gz"),
+  "ENCSR349XKD" = paste0(fragDir, "ENCSR349XKD.fragments.tsv.gz"),
+  "ENCSR434SXE" = paste0(fragDir, "ENCSR434SXE.fragments.tsv.gz"),
+  "ENCSR388NCA" = paste0(fragDir, "ENCSR388NCA.fragments.tsv.gz"),
+  "ENCSR506YMX" = paste0(fragDir, "ENCSR506YMX.fragments.tsv.gz"),
+  "ENCSR367GKP" = paste0(fragDir, "ENCSR367GKP.fragments.tsv.gz")
+)
+
+inputFiles3K <- c(
+  "B001-A-301" = paste0(fragDir, "B001-A-301_atac_fragments.tsv.gz"),
+  "B005-A-001" = paste0(fragDir, "B005-A-001_atac_fragments.tsv.gz"),
+  "B005-A-002" = paste0(fragDir, "B005-A-002_atac_fragments.tsv.gz"),
+  "B005-A-101" = paste0(fragDir, "B005-A-101_atac_fragments.tsv.gz"),
+  "B005-A-201" = paste0(fragDir, "B005-A-201_atac_fragments.tsv.gz"),
+  "B006-A-002" = paste0(fragDir, "B006-A-002_atac_fragments.tsv.gz"),
+  "B006-A-201" = paste0(fragDir, "B006-A-201_atac_fragments.tsv.gz"),
+  "B008-A-002" = paste0(fragDir, "B008-A-002_atac_fragments.tsv.gz"),
+  "B008-A-101" = paste0(fragDir, "B008-A-101_atac_fragments.tsv.gz"),
+  "B008-A-201" = paste0(fragDir, "B008-A-201_atac_fragments.tsv.gz"),
+  "B010-A-001" = paste0(fragDir, "B010-A-001_atac_fragments.tsv.gz"),
+  "B010-A-002" = paste0(fragDir, "B010-A-002_atac_fragments.tsv.gz"),
+  "B010-A-101" = paste0(fragDir, "B010-A-101_atac_fragments.tsv.gz"),
+  "B011-A-001" = paste0(fragDir, "B011-A-001_atac_fragments.tsv.gz"),
+  "B011-A-002" = paste0(fragDir, "B011-A-002_atac_fragments.tsv.gz"),
+  "B011-A-201" = paste0(fragDir, "B011-A-201_atac_fragments.tsv.gz"),
+  "B012-A-001" = paste0(fragDir, "B012-A-001_atac_fragments.tsv.gz"),
+  "B012-A-002" = paste0(fragDir, "B012-A-002_atac_fragments.tsv.gz"),
+  "B012-A-101" = paste0(fragDir, "B012-A-101_atac_fragments.tsv.gz")
+)
+
+inputFiles4K <- c(
+  "B004-A-004-R2" = paste0(fragDir, "B004-A-004-R2_atac_fragments.tsv.gz"),
+  "B004-A-204"    = paste0(fragDir, "B004-A-204_atac_fragments.tsv.gz"),
+  "B009-A-101"    = paste0(fragDir, "B009-A-101_atac_fragments.tsv.gz"),
+  "B010-A-201"    = paste0(fragDir, "B010-A-201_atac_fragments.tsv.gz"),
+  "B011-A-101"    = paste0(fragDir, "B011-A-101_atac_fragments.tsv.gz")
+)
+
+inputFiles5K <- c(
+  "B004-A-008" = paste0(fragDir, "B004-A-008_atac_fragments.tsv.gz"),
+  "B009-A-001" = paste0(fragDir, "B009-A-001_atac_fragments.tsv.gz")
+)
+
+inputFiles6K <- c(
+  "B012-A-201" = paste0(fragDir, "B012-A-201_atac_fragments.tsv.gz")
+)
+
+############################################################################################################################
+#..........................................................................................................................#
+############################################################################################################################
+# Create Arrow files
+
+ArrowFiles1K <- createArrowFiles(
+  inputFiles   = inputFiles1K,
+  sampleNames  = names(inputFiles1K),
+  minFrags     = 1000,
+  minTSS       = 5
+)
+
+ArrowFiles1p5K <- createArrowFiles(
+  inputFiles   = inputFiles1p5K,
+  sampleNames  = names(inputFiles1p5K),
+  minFrags     = 1500,
+  minTSS       = 5
+)
+
+ArrowFiles2K <- createArrowFiles(
+  inputFiles   = inputFiles2K,
+  sampleNames  = names(inputFiles2K),
+  minFrags     = 2000,
+  minTSS       = 5
+)
+
+ArrowFiles3K <- createArrowFiles(
+  inputFiles   = inputFiles3K,
+  sampleNames  = names(inputFiles3K),
+  minFrags     = 3000,
+  minTSS       = 5
+)
+
+ArrowFiles4K <- createArrowFiles(
+  inputFiles   = inputFiles4K,
+  sampleNames  = names(inputFiles4K),
+  minFrags     = 4000,
+  minTSS       = 5
+)
+
+ArrowFiles5K <- createArrowFiles(
+  inputFiles   = inputFiles5K,
+  sampleNames  = names(inputFiles5K),
+  minFrags     = 5000,
+  minTSS       = 5
+)
+
+ArrowFiles6K <- createArrowFiles(
+  inputFiles   = inputFiles6K,
+  sampleNames  = names(inputFiles6K),
+  minFrags     = 6000,
+  minTSS       = 5
+)
+
+# Reassign as character vectors of arrow file paths
+ArrowFiles1K   <- paste0(names(inputFiles1K),   ".arrow")
+ArrowFiles1p5K <- paste0(names(inputFiles1p5K), ".arrow")
+ArrowFiles2K   <- paste0(names(inputFiles2K),   ".arrow")
+ArrowFiles3K   <- paste0(names(inputFiles3K),   ".arrow")
+ArrowFiles4K   <- paste0(names(inputFiles4K),   ".arrow")
+ArrowFiles5K   <- paste0(names(inputFiles5K),   ".arrow")
+ArrowFiles6K   <- paste0(names(inputFiles6K),   ".arrow")
+
+# ENCODE samples
+ENCODE_Arrows <- c("ENCSR916RYB.arrow", "ENCSR904WIW.arrow", "ENCSR830FPR.arrow",
+                   "ENCSR997YNO.arrow", "ENCSR007QIO.arrow", "ENCSR349XKD.arrow", "ENCSR434SXE.arrow",
+                   "ENCSR388NCA.arrow", "ENCSR506YMX.arrow", "ENCSR367GKP.arrow")
+
+doubletScores <- addDoubletScores(ENCODE_Arrows,   
+                                  k = 10, knnMethod = "UMAP", 
+                                  LSIMethod = 1, threads = 1)
+                   
+############################################################################################################################
+#..........................................................................................................................#
+############################################################################################################################
+# Compute doublet scores for ENCODE samples
+
+doubScores <- addDoubletScores(ArrowFiles1K,   k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
+doubScores <- addDoubletScores(ArrowFiles1p5K, k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
+doubScores <- addDoubletScores(ArrowFiles2K,   k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
+doubScores <- addDoubletScores(ArrowFiles3K,   k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
+doubScores <- addDoubletScores(ArrowFiles4K,   k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
+doubScores <- addDoubletScores(ArrowFiles5K,   k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
+doubScores <- addDoubletScores(ArrowFiles6K,   k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
+
+############################################################################################################################
+#..........................................................................................................................#
+############################################################################################################################
+# Create ArchR project
+
+set.seed(1)
+allArrowFiles <- c(ArrowFiles1K, ArrowFiles1p5K, ArrowFiles2K, ArrowFiles3K, ArrowFiles4K, ArrowFiles5K, ArrowFiles6K)
+
+proj <- ArchRProject(
+  ArrowFiles        = allArrowFiles,
+  outputDirectory   = "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_output"
+)
+
+saveArchRProject(
+  ArchRProj       = proj,
+  outputDirectory = "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_output",
+  load            = FALSE,
+  overwrite       = FALSE
+)
+
+proj <- loadArchRProject("/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_output")
+proj <- filterDoublets(proj, filterRatio = 1.2)
+write.table(rownames(getCellColData(proj)), "initial_post_filter_atac_cells.txt")
+
+
+
+
+
