@@ -1,6 +1,6 @@
 #### Script 1 - ArchR_Analysis.R ####
 
-# Script for ArchR project creation using ENCODE and HuBMAP scATAC datasets, identification of epithelial cells and peak calling
+# Script for ArchR project creation, identification of epithelial cells and peak calling using ENCODE and HuBMAP colon scATAC datasets
 # Adapted from Hickey et al. 2023 (doi:10.1038/s41586-023-05915-x)
 
 #######################################
@@ -10,13 +10,11 @@
 library(ArchR)
 library(Seurat)
 library(BSgenome.Hsapiens.UCSC.hg38)
-library(parallel)
-'%notin%' <- Negate('%in%')
+library(pheatmap)
+library(cowplot)
+#library(parallel)
 
-# Load genome annotations
 addArchRGenome("hg38")
-
-# Set threads
 addArchRThreads(threads = 64)
 
 # Set working directory
@@ -27,143 +25,94 @@ arrowdir <- "/project/home/p201120/ryan/cCRE_pipeline/outputs/ArrowFiles/"
 fragDir <- "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/"
 
 #######################################
-# Define paths to fragment files
+# Define paths to fragment files and nFrags thresholds
 #######################################
 
-inputFiles1K <- c(
-  "B006-A-001"    = paste0(fragDir, "B006-A-001_atac_fragments.tsv.gz"),
-  "B006-A-101"    = paste0(fragDir, "B006-A-101_atac_fragments.tsv.gz"),
-  "B006-A-201-R2" = paste0(fragDir, "B006-A-201-R2_atac_fragments.tsv.gz"),
-  "ENCSR916RYB"   = paste0(fragDir, "ENCSR916RYB.fragments.tsv.gz"),
-  "ENCSR904WIW"   = paste0(fragDir, "ENCSR904WIW.fragments.tsv.gz"),
-  "ENCSR830FPR"   = paste0(fragDir, "ENCSR830FPR.fragments.tsv.gz")
+# HuBMAP samples
+HuBMAP_frags <- c(
+  # 1K threshold
+  "B006-A-001" = 1000, "B006-A-101" = 1000, "B006-A-201-R2" = 1000,
+  # 1.5K threshold
+  "B001-A-302" = 1500, "B001-A-401" = 1500,
+  "B001-A-406" = 1500, "B001-A-501" = 1500,
+  # 2K threshold
+  "B004-A-004" = 2000, "B008-A-001" = 2000,
+  # 3K threshold
+  "B001-A-301" = 3000, "B005-A-001" = 3000,
+  "B005-A-002" = 3000, "B005-A-101" = 3000,
+  "B005-A-201" = 3000, "B006-A-002" = 3000,
+  "B006-A-201" = 3000, "B008-A-002" = 3000,
+  "B008-A-101" = 3000, "B008-A-201" = 3000,
+  "B010-A-001" = 3000, "B010-A-002" = 3000,
+  "B010-A-101" = 3000, "B011-A-001" = 3000,
+  "B011-A-002" = 3000, "B011-A-201" = 3000,
+  "B012-A-001" = 3000, "B012-A-002" = 3000,
+  "B012-A-101" = 3000,
+  # 4K threshold
+  "B004-A-004-R2" = 4000, "B004-A-204" = 4000,
+  "B009-A-101" = 4000, "B010-A-201" = 4000,
+  "B011-A-101" = 4000,
+  # 5K threshold
+  "B004-A-008" = 5000, "B009-A-001" = 5000,
+  # 6K threshold
+  "B012-A-201" = 6000
 )
 
-inputFiles1p5K <- c(
-  "B001-A-302" = paste0(fragDir, "B001-A-302_atac_fragments.tsv.gz"),
-  "B001-A-401" = paste0(fragDir, "B001-A-401_atac_fragments.tsv.gz"),
-  "B001-A-406" = paste0(fragDir, "B001-A-406_atac_fragments.tsv.gz"),
-  "B001-A-501" = paste0(fragDir, "B001-A-501_atac_fragments.tsv.gz")
+# ENCODE samples
+ENCODE_frags <- c(
+  "ENCSR916RYB" = 1000, "ENCSR904WIW" = 1000, "ENCSR830FPR" = 1000,
+  "ENCSR997YNO" = 2000, "ENCSR007QIO" = 2000, "ENCSR349XKD" = 2000,
+  "ENCSR434SXE" = 2000, "ENCSR388NCA" = 2000, "ENCSR506YMX" = 2000,
+  "ENCSR367GKP" = 2000
 )
 
-inputFiles2K <- c(
-  "B004-A-004" = paste0(fragDir, "B004-A-004_atac_fragments.tsv.gz"),
-  "B008-A-001" = paste0(fragDir, "B008-A-001_atac_fragments.tsv.gz"),
-  "ENCSR997YNO" = paste0(fragDir, "ENCSR997YNO.fragments.tsv.gz"),
-  "ENCSR007QIO" = paste0(fragDir, "ENCSR007QIO.fragments.tsv.gz"),
-  "ENCSR349XKD" = paste0(fragDir, "ENCSR349XKD.fragments.tsv.gz"),
-  "ENCSR434SXE" = paste0(fragDir, "ENCSR434SXE.fragments.tsv.gz"),
-  "ENCSR388NCA" = paste0(fragDir, "ENCSR388NCA.fragments.tsv.gz"),
-  "ENCSR506YMX" = paste0(fragDir, "ENCSR506YMX.fragments.tsv.gz"),
-  "ENCSR367GKP" = paste0(fragDir, "ENCSR367GKP.fragments.tsv.gz")
+# Define fragment file paths
+HuBMAP_inputFiles <- setNames(
+  paste0(fragDir, names(HuBMAP_frags), "_atac_fragments.tsv.gz"),
+  names(HuBMAP_frags)
+)
+ENCODE_inputFiles <- setNames(
+  paste0(fragDir, names(ENCODE_frags), ".fragments.tsv.gz"),
+  names(ENCODE_frags)
 )
 
-inputFiles3K <- c(
-  "B001-A-301" = paste0(fragDir, "B001-A-301_atac_fragments.tsv.gz"),
-  "B005-A-001" = paste0(fragDir, "B005-A-001_atac_fragments.tsv.gz"),
-  "B005-A-002" = paste0(fragDir, "B005-A-002_atac_fragments.tsv.gz"),
-  "B005-A-101" = paste0(fragDir, "B005-A-101_atac_fragments.tsv.gz"),
-  "B005-A-201" = paste0(fragDir, "B005-A-201_atac_fragments.tsv.gz"),
-  "B006-A-002" = paste0(fragDir, "B006-A-002_atac_fragments.tsv.gz"),
-  "B006-A-201" = paste0(fragDir, "B006-A-201_atac_fragments.tsv.gz"),
-  "B008-A-002" = paste0(fragDir, "B008-A-002_atac_fragments.tsv.gz"),
-  "B008-A-101" = paste0(fragDir, "B008-A-101_atac_fragments.tsv.gz"),
-  "B008-A-201" = paste0(fragDir, "B008-A-201_atac_fragments.tsv.gz"),
-  "B010-A-001" = paste0(fragDir, "B010-A-001_atac_fragments.tsv.gz"),
-  "B010-A-002" = paste0(fragDir, "B010-A-002_atac_fragments.tsv.gz"),
-  "B010-A-101" = paste0(fragDir, "B010-A-101_atac_fragments.tsv.gz"),
-  "B011-A-001" = paste0(fragDir, "B011-A-001_atac_fragments.tsv.gz"),
-  "B011-A-002" = paste0(fragDir, "B011-A-002_atac_fragments.tsv.gz"),
-  "B011-A-201" = paste0(fragDir, "B011-A-201_atac_fragments.tsv.gz"),
-  "B012-A-001" = paste0(fragDir, "B012-A-001_atac_fragments.tsv.gz"),
-  "B012-A-002" = paste0(fragDir, "B012-A-002_atac_fragments.tsv.gz"),
-  "B012-A-101" = paste0(fragDir, "B012-A-101_atac_fragments.tsv.gz")
-)
-
-inputFiles4K <- c(
-  "B004-A-004-R2" = paste0(fragDir, "B004-A-004-R2_atac_fragments.tsv.gz"),
-  "B004-A-204"    = paste0(fragDir, "B004-A-204_atac_fragments.tsv.gz"),
-  "B009-A-101"    = paste0(fragDir, "B009-A-101_atac_fragments.tsv.gz"),
-  "B010-A-201"    = paste0(fragDir, "B010-A-201_atac_fragments.tsv.gz"),
-  "B011-A-101"    = paste0(fragDir, "B011-A-101_atac_fragments.tsv.gz")
-)
-
-inputFiles5K <- c(
-  "B004-A-008" = paste0(fragDir, "B004-A-008_atac_fragments.tsv.gz"),
-  "B009-A-001" = paste0(fragDir, "B009-A-001_atac_fragments.tsv.gz")
-)
-
-inputFiles6K <- c(
-  "B012-A-201" = paste0(fragDir, "B012-A-201_atac_fragments.tsv.gz")
-)
+all_frags <- c(HuBMAP_inputFiles, ENCODE_inputFiles)
 
 #######################################
 # Create arrow files
 #######################################
 
-ArrowFiles1K <- createArrowFiles(
-  inputFiles   = inputFiles1K,
-  sampleNames  = names(inputFiles1K),
-  minFrags     = 1000,
-  minTSS       = 5
-)
+all_thresholds <- unique(c(HuBMAP_frags, ENCODE_frags))
 
-ArrowFiles1p5K <- createArrowFiles(
-  inputFiles   = inputFiles1p5K,
-  sampleNames  = names(inputFiles1p5K),
-  minFrags     = 1500,
-  minTSS       = 5
-)
+for(threshold in sort(all_thresholds)) {
+  
+  hubmap_samples <- names(HuBMAP_frags)[HuBMAP_frags == threshold]
+  encode_samples <- names(ENCODE_frags)[ENCODE_frags == threshold]
+  all_samples <- c(hubmap_samples, encode_samples)
+  
+  cat("\nCreating Arrow files with minFrags =", threshold, "\n")
+  cat("Samples:", paste(all_samples, collapse = ", "), "\n")
+  
+  inputFiles <- all_frags[all_samples]
+  
+  createArrowFiles(
+    inputFiles  = inputFiles,
+    sampleNames = names(inputFiles),
+    minFrags    = threshold,
+    minTSS      = 5,
+    addTileMat  = TRUE,
+    addGeneScoreMat = TRUE,
+    force = TRUE
+  )
+}
 
-ArrowFiles2K <- createArrowFiles(
-  inputFiles   = inputFiles2K,
-  sampleNames  = names(inputFiles2K),
-  minFrags     = 2000,
-  minTSS       = 5
-)
-
-ArrowFiles3K <- createArrowFiles(
-  inputFiles   = inputFiles3K,
-  sampleNames  = names(inputFiles3K),
-  minFrags     = 3000,
-  minTSS       = 5
-)
-
-ArrowFiles4K <- createArrowFiles(
-  inputFiles   = inputFiles4K,
-  sampleNames  = names(inputFiles4K),
-  minFrags     = 4000,
-  minTSS       = 5
-)
-
-ArrowFiles5K <- createArrowFiles(
-  inputFiles   = inputFiles5K,
-  sampleNames  = names(inputFiles5K),
-  minFrags     = 5000,
-  minTSS       = 5
-)
-
-ArrowFiles6K <- createArrowFiles(
-  inputFiles   = inputFiles6K,
-  sampleNames  = names(inputFiles6K),
-  minFrags     = 6000,
-  minTSS       = 5
-)
-
-# Define ENCODE arrows
-ENCODE_Arrows <- c(
-                  paste0(arrowdir, "ENCSR916RYB.arrow"), 
-                  paste0(arrowdir,"ENCSR904WIW.arrow"), 
-                  paste0(arrowdir, "ENCSR830FPR.arrow"),
-                  paste0(arrowdir, "ENCSR997YNO.arrow"), 
-                  paste0(arrowdir, "ENCSR007QIO.arrow"), 
-                  paste0(arrowdir, "ENCSR349XKD.arrow"), 
-                  paste0(arrowdir, "ENCSR434SXE.arrow"),
-                  paste0(arrowdir, "ENCSR388NCA.arrow"), 
-                  paste0(arrowdir, "ENCSR506YMX.arrow"), 
-                  paste0(arrowdir, "ENCSR367GKP.arrow"))
-
+#######################################
 # Compute doublet scores for ENCODE samples
+#######################################
+
+ENCODE_Arrows <- paste0(arrowdir, "/", names(ENCODE_frags), ".arrow")
+names(ENCODE_Arrows) <- names(ENCODE_frags)
+
 doubletScores <- addDoubletScores(ENCODE_Arrows, k = 10, knnMethod = "UMAP", LSIMethod = 1, threads = 1)
 
 #######################################
@@ -172,24 +121,18 @@ doubletScores <- addDoubletScores(ENCODE_Arrows, k = 10, knnMethod = "UMAP", LSI
 
 ENCODEproj <- ArchRProject(
   ArrowFiles        = ENCODE_Arrows,
-  outputDirectory   = "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_output"
-)
-
-saveArchRProject(
-  ArchRProj       = ENCODEproj,
-  outputDirectory = "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_output",
-  load            = FALSE,
-  overwrite       = FALSE
+  outputDirectory   = "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_ENCODE"
 )
 
 #######################################
 # Filter doublets
 #######################################
 
-ENCODEproj <- loadArchRProject("/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_output")
-ENCODEproj <- filterDoublets(ENCODEproj)
-#write.table(rownames(getCellColData(ENCODEproj)), "initial_post_filter_ENCODE_cells.txt")
+ENCODEproj <- filterDoublets(ENCODEproj, filterRatio = 1.2)
 
+saveArchRProject(ArchRProj = ENCODEproj, 
+                 outputDirectory = "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_ENCODE")
+#ENCODEproj <- loadArchRProject("/project/home/p201120/ryan/cCRE_pipeline/files/scATAC/ArchR_ENCODE/")
 #######################################
 # Plot quality control metrics
 #######################################
@@ -216,7 +159,7 @@ plotPDF(p1, p2,
   name = "ENCODEproj_QC",
   ArchRProj = ENCODEproj,
   addDOC = FALSE,
-  width = 5, height = 5
+  width = 9, height = 6
 )
 
 #######################################
@@ -226,29 +169,25 @@ plotPDF(p1, p2,
 # Define marker genes
 markerSets <- list(
   General_Epithelial = c("EPCAM", "KRT8", "KRT18", "KRT19", "CDH1"),
-  T_cells            = c("CD3D", "CD3E", "CD3G", "CD8A", "CD8B",
-                         "TBX21", "IL7R", "CD4", "CD2"),
-  B_cells            = c("PAX5", "MS4A1", "CD19", "IGLL5", "VPREB3"),
-  Myeloid            = c("CD14", "CD68", "CSF1R", "LYZ", "ITGAM"),
-  NK_cells           = c("NCAM1", "KLRD1", "NKG7", "GNLY"),
-  Fibroblasts        = c("COL1A1", "COL1A2", "COL6A1", "COL6A2",
-                         "FAP", "CBLN2", "SPOCK1", "ACSS3"),
-  Endothelial        = c("PECAM1", "VWF", "CDH5", "CLDN5"),
-  SmoothMuscle       = c("ACTA2", "MYH11", "TAGLN")
+  T_cells = c("CD3D", "CD3E", "CD3G", "CD8A", "CD8B","TBX21", "IL7R", "CD4", "CD2"),
+  B_cells = c("PAX5", "MS4A1", "CD19", "IGLL5", "VPREB3"),
+  Myeloid = c("CD14", "CD68", "CSF1R", "LYZ", "ITGAM"),
+  NK_cells = c("NCAM1", "KLRD1", "NKG7", "GNLY"),
+  Fibroblasts = c("COL1A1", "COL1A2", "COL6A1", "COL6A2", "FAP", "CBLN2", "SPOCK1", "ACSS3"),
+  Endothelial = c("PECAM1", "VWF", "CDH5", "CLDN5"),
+  SmoothMuscle = c("ACTA2", "MYH11", "TAGLN")
 )
 
 allSamples <- unique(ENCODEproj$Sample)
 
-for(samp in allSamples) {
+for(sample in allSamples) {
 
-  cat("\n=============================\n")
-  cat("Processing sample:", samp, "\n")
-  cat("=============================\n")
+  cat("Processing sample:", sample, "\n")
 
-  outDir <- paste0("ArchR_", samp)
+  outDir <- paste0("/project/home/p201120/ryan/cCRE_pipeline/outputs/ArchR_", sample)
   dir.create(outDir, showWarnings = FALSE)
 
-  sampCells <- getCellNames(ENCODEproj)[ENCODEproj$Sample == samp]
+  sampCells <- getCellNames(ENCODEproj)[ENCODEproj$Sample == sample]
   cat("Total cells:", length(sampCells), "\n")
 
   sampProj <- subsetArchRProject(
@@ -263,9 +202,11 @@ for(samp in allSamples) {
     useMatrix = "TileMatrix",
     name = "IterativeLSI",
     iterations = 2,
-    clusterParams = list(resolution = c(0.2), sampleCells = 10000, n.start = 10),
+    clusterParams = list(resolution = c(2), 
+    sampleCells = 10000, 
+    n.start = 10),
     varFeatures = 15000,
-    dimsToUse = 1:15,
+    dimsToUse = 1:25,
     force = TRUE
   )
 
@@ -274,7 +215,7 @@ for(samp in allSamples) {
     reducedDims = "IterativeLSI",
     method = "Seurat",
     name = "Clusters",
-    resolution = 0.4,
+    resolution = 0.8,
     force = TRUE
   )
 
@@ -305,7 +246,7 @@ for(samp in allSamples) {
     embedding = "UMAP"
   )
 
-  # Read GeneScoreMatrix once
+  # Read GeneScoreMatrix
   gsMatrix <- getMatrixFromProject(sampProj, useMatrix = "GeneScoreMatrix")
   allMarkers <- unlist(markerSets)
   availMarkers <- allMarkers[allMarkers %in% rowData(gsMatrix)$name]
@@ -324,12 +265,12 @@ for(samp in allSamples) {
   })
   colnames(meanScores) <- sort(unique(clusters))
 
-  # Heatmap ordered by marker set
+  # order markers
   orderedGenes <- unlist(markerSets)
   orderedGenes <- orderedGenes[orderedGenes %in% rownames(meanScores)]
 
   heatMatScaled <- t(scale(t(meanScores[orderedGenes, ])))
-  heatMatScaled[is.nan(heatMatScaled)] <- 0
+  #heatMatScaled[is.nan(heatMatScaled)] <- 0
 
   geneSetAnnot <- data.frame(
     CellType = rep(names(markerSets), lengths(markerSets)),
@@ -344,7 +285,7 @@ for(samp in allSamples) {
     show_rownames = TRUE,
     fontsize_row = 7,
     fontsize_col = 9,
-    main = paste0(samp, " | Gene Activity Scores per Cluster"),
+    main = paste0(sample, " | Gene Activity Scores per Cluster"),
     silent = TRUE
   )
 
@@ -359,34 +300,27 @@ for(samp in allSamples) {
   setScoresDF <- round(as.data.frame(setScores), 3)
   setScoresDF$Cluster <- rownames(setScoresDF)
 
-  cat("\nCluster scores for", samp, ":\n")
+  cat("\nCluster scores for", sample, ":\n")
   print(setScoresDF)
 
-  write.csv(setScoresDF,
-            file = file.path(outDir, paste0("ClusterScores_", samp, ".csv")),
-            row.names = TRUE)
-
-  # Save PDF: page 1 = UMAPs, page 2 = heatmap
-  pdf(file.path(outDir, paste0("MarkerAnalysis_", samp, ".pdf")),
+  # Save PDF
+  pdf(file.path(outDir, paste0("MarkerAnalysis_", sample, ".pdf")),
       width = 15, height = 10)
 
-  # Page 1: UMAPs
   print(cowplot::plot_grid(
     sample_umap, cluster_umap,
-    ncol = 2,
-    labels = c("Sample", "Clusters"),
-    label_size = 12
+    ncol = 2
   ))
 
-  # Page 2: Heatmap on its own page
   grid::grid.newpage()
   grid::grid.draw(p_heatmap$gtable)
 
   dev.off()
-  cat("Saved PDF:", file.path(outDir, paste0("MarkerAnalysis_", samp, ".pdf")), "\n")
+  cat("Saved PDF:", file.path(outDir, paste0("MarkerAnalysis_", sample, ".pdf")), "\n")
 
   saveArchRProject(sampProj)
 
+  # tidy
   rm(sampProj, gsMat, meanScores, setScores, setScoresDF,
      p_heatmap, heatMatScaled, geneSetAnnot, orderedGenes)
   gc()
@@ -398,11 +332,11 @@ for(samp in allSamples) {
 
 ENCODE_epi_Clusters <- list(
   "ENCSR997YNO" = c("C1", "C2"),
-  "ENCSR830FPR" = c("C1", "C2", "C3", "C4"),
-  "ENCSR349XKD" = c("C1", "C2"),
+  "ENCSR830FPR" = c("C1", "C2", "C3", "C4", "C5"),
+  "ENCSR349XKD" = c("C4", "C5", "C6"),
   "ENCSR434SXE" = c("C1"),
   "ENCSR506YMX" = c("C2"),
-  "ENCSR904WIW" = c("C1", "C2", "C3", "C4", "C5","C6")
+  "ENCSR904WIW" = c("C5","C6", "C7", "C8","C9", "C10", "C11", "C12")
   # Samples with no epithelial clusters are omitted
 )
 
@@ -433,7 +367,6 @@ ENCODEProjEpi <- subsetArchRProject(
   force = TRUE
 )
 
-# Verify sample composition
 table(ENCODEProjEpi$Sample)
 
 #######################################
@@ -441,27 +374,16 @@ table(ENCODEProjEpi$Sample)
 #######################################
 
 # Define HuBMAP arrows
-HuBMAP_Arrows <- c(
-                  paste0(arrowdir, "/B006-A-001.arrow"), paste0(arrowdir,"/B006-A-101.arrow"), paste0(arrowdir,"/B006-A-201-R2.arrow"),
-                  paste0(arrowdir,"/B001-A-302.arrow"), paste0(arrowdir,"/B001-A-401.arrow"), paste0(arrowdir,"/B001-A-406.arrow"), 
-                  paste0(arrowdir, "/B001-A-501.arrow"), paste0(arrowdir, "/B004-A-004.arrow"), paste0(arrowdir, "/B008-A-001.arrow"), 
-                  paste0(arrowdir, "/B001-A-301.arrow"), paste0(arrowdir, "/B005-A-001.arrow"), paste0(arrowdir, "/B005-A-002.arrow"), 
-                  paste0(arrowdir, "/B005-A-101.arrow"), paste0(arrowdir, "/B005-A-201.arrow"), paste0(arrowdir, "/B006-A-002.arrow"), 
-                  paste0(arrowdir, "/B006-A-201.arrow"), paste0(arrowdir, "/B008-A-002.arrow"), paste0(arrowdir, "/B008-A-101.arrow"), 
-                  paste0(arrowdir, "/B008-A-201.arrow"), paste0(arrowdir, "/B010-A-001.arrow"), paste0(arrowdir, "/B010-A-002.arrow"), 
-                  paste0(arrowdir, "/B010-A-101.arrow"), paste0(arrowdir, "/B011-A-001.arrow"), paste0(arrowdir, "/B011-A-002.arrow"), 
-                  paste0(arrowdir, "/B011-A-201.arrow"), paste0(arrowdir, "/B012-A-001.arrow"), paste0(arrowdir, "/B012-A-002.arrow"), 
-                  paste0(arrowdir, "/B012-A-101.arrow"), paste0(arrowdir, "/B004-A-004-R2.arrow"), paste0(arrowdir, "/B004-A-204.arrow"), 
-                  paste0(arrowdir, "/B009-A-101.arrow"), paste0(arrowdir, "/B010-A-201.arrow"), paste0(arrowdir, "/B011-A-101.arrow"), 
-                  paste0(arrowdir, "/B004-A-008.arrow"), paste0(arrowdir, "/B009-A-001.arrow"), paste0(arrowdir, "/B012-A-201.arrow"))
+HuBMAP_Arrows <- paste0(arrowdir, "/", names(HuBMAP_frags), ".arrow")
+names(HuBMAP_Arrows) <- names(HuBMAP_frags)
 
-# Create ArchR project for HuBMAP samples                                                               
-HuBMAPproj <- ArchRProject(
-  ArrowFiles        = HuBMAP_Arrows,
-  outputDirectory   = "/project/home/p201120/ryan/cCRE_pipeline/outputs/HuBMAPProj"
+# Create combined project
+CombinedProj <- ArchRProject(
+  ArrowFiles      = c(ENCODE_Arrows, HuBMAP_Arrows),
+  outputDirectory = "ArchR_Epithelial_Combined"
 )
 
-# Read in the cell barcodes
+# Read in the cell barcodes from multiome and non-multiome HuBMAP samples
 HuBMAP_multiome_colon_epi_barcodes <- read.table(
   "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/files/colon_epithelial_peak_matrix_cells.tsv",
   header = FALSE,
@@ -477,43 +399,17 @@ HuBMAP_Nonmultiome_colon_epi_barcodes <- read.table(
 )$V1
 
 # Combine HuBMAP multiome and non-multiome epithelial barcodes
-allHuBMAPEpithelialCells <- union(HuBMAP_multiome_colon_epi_barcodes, HuBMAP_Nonmultiome_colon_epi_barcodes)
+HuBMAPEpiCells <- union(HuBMAP_multiome_colon_epi_barcodes, HuBMAP_Nonmultiome_colon_epi_barcodes)
 
-# Retain only barcodes present in the HuBMAP ArchR project
-allHuBMAPEpithelialCells <- allHuBMAPEpithelialCells[allHuBMAPEpithelialCells %in% getCellNames(HuBMAPproj)]
+# Define all epithelial cells
+AllEpiCells <- c(getCellNames(ENCODEProjEpi), HuBMAPEpiCells)
 
-# Subset HuBMAP project to epithelial cells
-HuBMAPProjEpi <- subsetArchRProject(
-  ArchRProj = HuBMAPproj,
-  cells = allHuBMAPEpithelialCells,
-  outputDirectory = "ArchR_Epithelial_HuBMAP",
-  force = TRUE
-)
-
-# Get all arrow files from both projects
-allArrows <- c(
-  getArrowFiles(ENCODEProjEpi),
-  getArrowFiles(HuBMAPProjEpi)
-)
-
-# Get all epithelial cell names from both projects
-allEpiCells <- c(
-  getCellNames(ENCODEProjEpi),
-  getCellNames(HuBMAPProjEpi)
-)
-
-# Create combined epithelial project from all arrows
-CombinedEpiProj <- ArchRProject(
-  ArrowFiles      = allArrows,
-  outputDirectory = "ArchR_Epithelial_Combined"
-)
-
-# Subset to only the epithelial cells from both projects
+# Create combined epithelial project
 CombinedEpiProj <- subsetArchRProject(
-  ArchRProj       = CombinedEpiProj,
-  cells           = allEpiCells[allEpiCells %in% getCellNames(CombinedEpiProj)],
+  ArchRProj = CombinedProj,
+  cells = AllEpiCells,
   outputDirectory = "ArchR_Epithelial_Combined",
-  force           = TRUE
+  force = TRUE
 )
 
 table(CombinedEpiProj$Sample)
