@@ -202,11 +202,11 @@ for(sample in allSamples) {
     useMatrix = "TileMatrix",
     name = "IterativeLSI",
     iterations = 2,
-    clusterParams = list(resolution = c(2), 
+    clusterParams = list(resolution = c(0.2), 
     sampleCells = 10000, 
     n.start = 10),
-    varFeatures = 15000,
-    dimsToUse = 1:25,
+    varFeatures = 25000,
+    dimsToUse = 1:30,
     force = TRUE
   )
 
@@ -215,7 +215,7 @@ for(sample in allSamples) {
     reducedDims = "IterativeLSI",
     method = "Seurat",
     name = "Clusters",
-    resolution = 0.8,
+    resolution = 0.4,
     force = TRUE
   )
 
@@ -332,11 +332,11 @@ for(sample in allSamples) {
 
 ENCODE_epi_Clusters <- list(
   "ENCSR997YNO" = c("C1", "C2"),
-  "ENCSR830FPR" = c("C1", "C2", "C3", "C4", "C5"),
-  "ENCSR349XKD" = c("C4", "C5", "C6"),
+  "ENCSR830FPR" = c("C1", "C2", "C3", "C4"),
+  "ENCSR349XKD" = c("C1", "C2"),
   "ENCSR434SXE" = c("C1"),
-  "ENCSR506YMX" = c("C2"),
-  "ENCSR904WIW" = c("C5","C6", "C7", "C8","C9", "C10", "C11", "C12")
+  "ENCSR506YMX" = c("C1"),
+  "ENCSR904WIW" = c("C1","C2", "C3", "C4","C5", "C6")
   # Samples with no epithelial clusters are omitted
 )
 
@@ -413,6 +413,43 @@ CombinedEpiProj <- subsetArchRProject(
 )
 
 table(CombinedEpiProj$Sample)
+
+saveArchRProject(CombinedEpiProj)
+#CombinedEpiProj <- loadArchRProject("/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/")
+
+
+
+#######################################
+# Remove low count samples
+#######################################
+
+# Check current sample counts
+table(CombinedEpiProj$Sample)
+
+# Define samples to remove
+remove_samples <- c("B005-A-101", "B005-A-201", "B004-A-004")
+
+# Get cells to keep
+keep_cells <- getCellNames(CombinedEpiProj)[
+  !(CombinedEpiProj$Sample %in% remove_samples)
+]
+
+cat("Cells before filtering:", nCells(CombinedEpiProj), "\n")
+cat("Cells to remove:", nCells(CombinedEpiProj) - length(keep_cells), "\n")
+cat("Cells after filtering:", length(keep_cells), "\n")
+
+# Subset project
+CombinedEpiProj <- subsetArchRProject(
+  ArchRProj = CombinedEpiProj,
+  cells = keep_cells,
+  outputDirectory = "ArchR_Epithelial_Combined",
+  force = TRUE
+)
+
+# Verify
+table(CombinedEpiProj$Sample)
+
+saveArchRProject(CombinedEpiProj)
 
 #######################################
 # Run LSI and Harmony on epithelial cells
