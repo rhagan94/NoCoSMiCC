@@ -1,3 +1,6 @@
+CombinedEpiProj <- loadArchRProject("/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/")
+saveArchRProject(CombinedEpiProj)
+
 #### Script 1 - ArchR_Analysis.R ####
 
 # Script for ArchR project creation, identification of epithelial cells and peak calling using ENCODE and HuBMAP colon scATAC datasets
@@ -333,7 +336,7 @@ for(sample in allSamples) {
 ENCODE_epi_Clusters <- list(
   "ENCSR997YNO" = c("C1", "C2"),
   "ENCSR830FPR" = c("C1", "C2", "C3", "C4"),
-  "ENCSR349XKD" = c("C1", "C2"),
+  "ENCSR349XKD" = c("C1", "C2", "C3"),
   "ENCSR434SXE" = c("C1"),
   "ENCSR506YMX" = c("C1"),
   "ENCSR904WIW" = c("C1","C2", "C3", "C4","C5", "C6")
@@ -370,6 +373,86 @@ ENCODEProjEpi <- subsetArchRProject(
 table(ENCODEProjEpi$Sample)
 
 #######################################
+# LSI, clustering on combined ENCODE epithelial cells
+#######################################
+
+ENCODEProjEpi <- addIterativeLSI(
+  ArchRProj = ENCODEProjEpi,
+  useMatrix = "TileMatrix",
+  name = "IterativeLSI",
+  iterations = 3,
+  dimsToUse = 1:30,
+  varFeatures = 25000,
+  force = TRUE
+)
+
+ENCODEProjEpi <- addHarmony(
+  ArchRProj = ENCODEProjEpi,
+  reducedDims = "IterativeLSI",
+  name = "Harmony",
+  groupBy = "Sample",
+  force = TRUE
+)
+
+ENCODEProjEpi <- addClusters(
+  input = ENCODEProjEpi,
+  reducedDims = "Harmony",
+  resolution = 1.0,
+  force = TRUE
+)
+
+ENCODEProjEpi <- addUMAP(
+  ArchRProj = ENCODEProjEpi,
+  reducedDims = "Harmony",
+  name = "UMAP_Harmony",
+  nNeighbors = 30,
+  minDist = 0.5,
+  metric = "cosine",
+  force = TRUE
+)
+
+saveArchRProject(ENCODEProjEpi)
+
+p1 <- plotEmbedding(
+  ArchRProj = ENCODEProjEpi,
+  colorBy = "cellColData",
+  name = "Sample",
+  embedding = "UMAP_Harmony"
+)
+
+p2 <- plotEmbedding(
+  ArchRProj = ENCODEProjEpi,
+  colorBy = "GeneScoreMatrix",
+  name = c("EPCAM", "KRT8", "KRT18", "MUC2"),
+  embedding = "UMAP_Harmony"
+)
+
+p3 <- plotEmbedding(
+  ArchRProj = ENCODEProjEpi,
+  colorBy = "GeneScoreMatrix",
+  name = c("CD3E", "CD14", "COL1A1", "FAP"),
+  embedding = "UMAP_Harmony"
+)
+
+plotPDF(p1, p2, p3,
+  name = "Epithelial_ENCODE_QC",
+  ArchRProj = ENCODEProjEpi,
+  addDOC = FALSE,
+  width = 5, height = 5
+)
+
+
+
+
+
+
+
+
+
+
+
+
+#######################################
 # Create combined epithelial project
 #######################################
 
@@ -379,7 +462,7 @@ names(HuBMAP_Arrows) <- names(HuBMAP_frags)
 
 # Create combined project
 CombinedProj <- ArchRProject(
-  ArrowFiles      = c(ENCODE_Arrows, HuBMAP_Arrows),
+  ArrowFiles = c(ENCODE_Arrows, HuBMAP_Arrows),
   outputDirectory = "ArchR_Epithelial_Combined"
 )
 
@@ -412,26 +495,20 @@ CombinedEpiProj <- subsetArchRProject(
   force = TRUE
 )
 
-table(CombinedEpiProj$Sample)
-
 saveArchRProject(CombinedEpiProj)
 #CombinedEpiProj <- loadArchRProject("/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/")
 
-
-
 #######################################
-# Remove low count samples
+# Remove samples with < 100 epithelial cells
 #######################################
 
-# Check current sample counts
 table(CombinedEpiProj$Sample)
 
-# Define samples to remove
-remove_samples <- c("B005-A-101", "B005-A-201", "B004-A-004")
+low_count_samples <- c("B004-A-004", "B005-A-101", "B005-A-201")
 
-# Get cells to keep
+# Fetch the cell names to keep
 keep_cells <- getCellNames(CombinedEpiProj)[
-  !(CombinedEpiProj$Sample %in% remove_samples)
+  !(CombinedEpiProj$Sample %in% low_count_samples)
 ]
 
 cat("Cells before filtering:", nCells(CombinedEpiProj), "\n")
@@ -446,10 +523,52 @@ CombinedEpiProj <- subsetArchRProject(
   force = TRUE
 )
 
-# Verify
 table(CombinedEpiProj$Sample)
 
 saveArchRProject(CombinedEpiProj)
+
+#######################################
+# Add metadata
+#######################################
+
+donor_map <- c(
+  # HuBMAP
+  "B001-A-301"    = "B001", "B001-A-302"    = "B001",
+  "B001-A-401"    = "B001", "B001-A-406"    = "B001",
+  "B001-A-501"    = "B001",
+  "B004-A-004"    = "B004", "B004-A-004-R2" = "B004",
+  "B004-A-008"    = "B004", "B004-A-204"    = "B004",
+  "B005-A-001"    = "B005", "B005-A-002"    = "B005",
+  "B006-A-001"    = "B006", "B006-A-002"    = "B006",
+  "B006-A-101"    = "B006", "B006-A-201"    = "B006",
+  "B006-A-201-R2" = "B006",
+  "B008-A-001"    = "B008", "B008-A-002"    = "B008",
+  "B008-A-101"    = "B008", "B008-A-201"    = "B008",
+  "B009-A-001"    = "B009", "B009-A-101"    = "B009",
+  "B010-A-001"    = "B010", "B010-A-002"    = "B010",
+  "B010-A-101"    = "B010", "B010-A-201"    = "B010",
+  "B011-A-001"    = "B011", "B011-A-002"    = "B011",
+  "B011-A-101"    = "B011", "B011-A-201"    = "B011",
+  "B012-A-001"    = "B012", "B012-A-002"    = "B012",
+  "B012-A-101"    = "B012", "B012-A-201"    = "B012",
+  # ENCODE
+  "ENCSR830FPR"   = "ENCSR830FPR", "ENCSR434SXE" = "ENCSR434SXE",
+  "ENCSR997YNO"   = "ENCSR997YNO", "ENCSR904WIW" = "ENCSR904WIW",
+  "ENCSR506YMX"   = "ENCSR506YMX", "ENCSR349XKD" = "ENCSR349XKD"
+)
+
+# Add Donor column
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data      = donor_map[CombinedEpiProj$Sample],
+  name      = "Donor",
+  cells     = getCellNames(CombinedEpiProj),
+  force     = TRUE
+)
+
+# Verify
+table(CombinedEpiProj$Donor)
+
 
 #######################################
 # Run LSI and Harmony on epithelial cells
@@ -460,6 +579,10 @@ CombinedEpiProj <- addIterativeLSI(
   useMatrix = "TileMatrix",
   name = "IterativeLSI",
   iterations = 3,
+  clusterParams = list(
+        resolution = c(0.1, 0.2), 
+        sampleCells = 20000, 
+        n.start = 10), 
   sampleCellsPre = 25000,
   dimsToUse = 1:25,
   varFeatures = 15000,
@@ -470,7 +593,7 @@ CombinedEpiProj <- addHarmony(
   ArchRProj = CombinedEpiProj,
   reducedDims = "IterativeLSI",
   name = "Harmony",
-  groupBy = "Sample",
+  groupBy = "Donor",
   force = TRUE
 )
 
@@ -493,6 +616,9 @@ CombinedEpiProj <- addUMAP(
 
 saveArchRProject(CombinedEpiProj)
 
+
+CombinedEpiProj <- addImputeWeights(ArchRProj = CombinedEpiProj, reducedDims = "Harmony")
+  
 #######################################
 # Plot combined epithelial UMAPs
 #######################################
@@ -527,6 +653,330 @@ plotPDF(p1, p2, p3,
 
 saveArchRProject(CombinedEpiProj)
 #CombinedEpiProj <- loadArchRProject("/mnt/tier2/project/p201120/ryan/cCRE_pipeline/outputs/ArrowFiles/ArchR_Epithelial_Combined/")
+
+#######################################
+# Annotate epithelial cell types using published labels
+#######################################
+
+# read in the previously published HuBMAP labels
+multiome_labels <- read.table(
+  "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC_multiome_cell_types_epithelial_colon.tsv",
+  header = TRUE, sep = "\t", stringsAsFactors = FALSE, comment.char = ""
+)
+
+nonmultiome_labels <- read.table(
+  "/project/home/p201120/ryan/cCRE_pipeline/files/scATAC_non_multiome_cell_types_epithelial_colon.tsv",
+  header = TRUE, sep = "\t", stringsAsFactors = FALSE, comment.char = ""
+)
+
+colnames(multiome_labels)    <- c("Cell", "CellType_Published")
+colnames(nonmultiome_labels) <- c("Cell", "CellType_Published")
+
+hubmap_labels <- bind_rows(
+  multiome_labels    |> mutate(Source = "multiome"),
+  nonmultiome_labels |> mutate(Source = "non_multiome")
+) |> distinct(Cell, .keep_all = TRUE)
+
+cat("=== HubMAP label counts ===\n")
+cat("Multiome cells:     ", nrow(multiome_labels), "\n")
+cat("Non-multiome cells: ", nrow(nonmultiome_labels), "\n")
+cat("Combined unique:    ", nrow(hubmap_labels), "\n")
+
+cell_names <- getCellNames(CombinedEpiProj)
+
+label_map <- tibble(Cell = cell_names) |>
+  left_join(hubmap_labels, by = "Cell")
+
+# Add published labels (NA for ENCODE cells)
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data  = label_map$CellType_Published,
+  cells = cell_names,
+  name  = "CellType_Published",
+  force = TRUE
+)
+
+cat("\n=== Label match rate ===\n")
+cat("HubMAP labelled: ", sum(!is.na(label_map$CellType_Published)), "\n")
+cat("ENCODE (NA):     ", sum(is.na(label_map$CellType_Published)), "\n")
+
+# KNN
+harmony_embed <- getEmbedding(
+  ArchRProj = CombinedEpiProj,
+  embedding = "UMAP_Harmony",
+  returnDF  = TRUE
+)
+
+hubmap_idx <- which(!is.na(CombinedEpiProj$CellType_Published))
+encode_idx  <- which(is.na(CombinedEpiProj$CellType_Published))
+
+ref_embed   <- as.matrix(harmony_embed[hubmap_idx, ])
+query_embed <- as.matrix(harmony_embed[encode_idx, ])
+ref_labels  <- CombinedEpiProj$CellType_Published[hubmap_idx]
+
+library(FNN)
+knn_result <- get.knnx(data = ref_embed, query = query_embed, k = 25)
+
+encode_knn_labels <- apply(knn_result$nn.index, 1, function(idx) {
+  neighbour_labels <- ref_labels[idx]
+  names(sort(table(neighbour_labels), decreasing = TRUE))[1]
+})
+
+encode_knn_confidence <- apply(knn_result$nn.index, 1, function(idx) {
+  neighbour_labels <- ref_labels[idx]
+  max(table(neighbour_labels)) / length(neighbour_labels)
+})
+
+all_labels             <- CombinedEpiProj$CellType_Published
+all_labels[encode_idx] <- encode_knn_labels
+
+confidence_all             <- rep(NA_real_, length(cell_names))
+confidence_all[encode_idx] <- encode_knn_confidence
+
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data  = all_labels,
+  cells = cell_names,
+  name  = "CellTypeKNN",
+  force = TRUE
+)
+
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data  = confidence_all,
+  cells = cell_names,
+  name  = "KNNConfidence",
+  force = TRUE
+)
+
+cat("\n=== Final label distribution (all cells) ===\n")
+print(sort(table(CombinedEpiProj$CellTypeKNN, useNA = "ifany"), decreasing = TRUE))
+
+cat("\n=== ENCODE KNN label distribution ===\n")
+print(sort(table(encode_knn_labels), decreasing = TRUE))
+
+cat("\n=== ENCODE confidence summary per label ===\n")
+tibble(label = encode_knn_labels, confidence = encode_knn_confidence) |>
+  group_by(label) |>
+  summarise(
+    n           = n(),
+    median_conf = round(median(confidence), 3),
+    pct_high    = round(mean(confidence > 0.6) * 100, 1)
+  ) |>
+  arrange(desc(n)) |>
+  print()
+
+CombinedEpiProj@cellColData$KNNConfidence[
+  is.na(CombinedEpiProj@cellColData$KNNConfidence)
+] <- 1
+
+p_annot <- plotEmbedding(
+  ArchRProj = CombinedEpiProj,
+  colorBy   = "cellColData",
+  name      = c("CellTypeKNN", "CellType_Published", "KNNConfidence"),
+  embedding = "UMAP_Harmony"
+)
+
+plotPDF(p_annot,
+  name      = "CellType_KNN_Annotation",
+  ArchRProj = CombinedEpiProj,
+  addDOC    = FALSE,
+  width = 6, height = 6
+)
+
+# Collapse cell types
+ta_map <- c(
+  "Stem"                = "Stem",
+  "CyclingTA 1"         = "Cycling TA",
+  "CyclingTA 2"         = "Cycling TA",
+  "TA1"                 = "TA1",
+  "TA2"                 = "TA2",
+  "Immature Enterocytes"= "Immature Enterocytes",
+  "Enterocytes"         = "Enterocytes",
+  "Best4+ Enterocytes"  = "Best4+ Enterocytes",
+  "Immature Goblet"     = "Immature Goblet",
+  "Goblet"              = "Goblet",
+  "Enteroendocrine"     = "Enteroendocrine",
+  "Enterochromaffin"    = "Enteroendocrine",
+  "EnteroendocrineUn"   = "Enteroendocrine",
+  "EnteroendocrineUn 1" = "Enteroendocrine",
+  "NEUROG3high"         = "Enteroendocrine",
+  "L Cells"             = "Enteroendocrine",
+  "I Cells"             = "Enteroendocrine",
+  "D Cells"             = "Enteroendocrine",
+  "S Cells"             = "Enteroendocrine",
+  "Mo Cells"            = "Enteroendocrine",
+  "Tuft"                = "Tuft"
+)
+
+ta_labels <- ta_map[CombinedEpiProj$CellTypeKNN]
+#ta_labels[is.na(ta_labels)] <- "Unknown"
+
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data  = ta_labels,
+  cells = getCellNames(CombinedEpiProj),
+  name  = "CellTypeTA",
+  force = TRUE
+)
+
+# sort
+sort(table(CombinedEpiProj$CellTypeTA), decreasing = TRUE)
+
+p_ta <- plotEmbedding(
+  ArchRProj = CombinedEpiProj,
+  colorBy   = "cellColData",
+  name      = "CellTypeTA",
+  embedding = "UMAP_Harmony"
+)
+
+plotPDF(p_ta,
+  name      = "CellType_TA_Split",
+  ArchRProj = CombinedEpiProj,
+  addDOC    = FALSE,
+  width = 6, height = 6
+)
+
+library(ArchR)
+
+# ── Publication colour palette ──────────────────────────────────
+# Using a colourblind-friendly palette inspired by 
+# Wong (2011) Nature Methods + additional distinct hues
+cell_type_colours <- c(
+  "Stem"                 = "#E41A1C",  # red 
+  "Cycling TA"           = "#4A90D9",  # mid blue
+  "TA2"                  = "#66C2A5",  # teal-green
+  "TA1"                  = "#A6D854",  # yellow-green
+  "Goblet" = "#FC8D62",  # orange
+  "Immature Goblet"      = "#FFD92F",  # yellow
+  "Best4+ Enterocytes"   = "#8DA0CB",  # muted blue
+  "Immature Enterocytes"      = "#B3B3E6",  # lavender
+  "Enterocytes"          = "#984EA3",  # purple
+  "Enteroendocrine"      = "#00674F",  # dark green
+  "Tuft"                 = "#FF7F00"   # amber
+)
+
+# ── Plot with custom palette ─────────────────────────────────────
+p_pub <- plotEmbedding(
+  ArchRProj  = CombinedEpiProj,
+  colorBy    = "cellColData",
+  name       = "CellTypeTA",
+  embedding  = "UMAP_Harmony",
+  pal        = cell_type_colours,
+  labelMeans = FALSE,      # remove numbered labels
+  size       = 0.4,        # smaller points — less overplotting
+  plotAs     = "points"
+)
+
+# ── Clean up the ggplot theme ────────────────────────────────────
+library(ggplot2)
+
+p_pub <- p_pub +
+  theme_classic(base_size = 14) +
+  theme(
+    axis.line        = element_line(linewidth = 0.5),
+    axis.ticks       = element_line(linewidth = 0.5),
+    axis.text        = element_blank(),
+    axis.ticks.length = unit(0, "pt"),
+    legend.title     = element_text(face = "bold", size = 12),
+    legend.text      = element_text(size = 11),
+    legend.key.size  = unit(0.5, "cm"),
+    plot.title       = element_blank()
+  ) +
+  guides(colour = guide_legend(
+    override.aes = list(size = 3),   # larger legend points
+    ncol = 1
+  )) +
+  labs(
+    x      = "UMAP Dimension 1",
+    y      = "UMAP Dimension 2",
+    colour = "Cell Type"
+  )
+
+# ── Save at publication resolution ───────────────────────────────
+ggsave(
+  "CombinedEpi_CellTypeTA_publication.pdf",
+  plot   = p_pub,
+  width  = 7,
+  height = 6,
+  device = cairo_pdf   # better font rendering than default PDF
+)
+
+ggsave(
+  "CombinedEpi_CellTypeTA_publication.png",
+  plot   = p_pub,
+  width  = 7,
+  height = 6,
+  dpi    = 300
+)
+
+
+
+
+
+
+
+
+#############
+
+all_cells <- getCellNames(CombinedEpiProj)
+final_labels_knn <- CombinedEpiProj$HuBMAPCellType  # start with published HuBMAP
+
+# Add KNN labels for ENCODE cells
+final_labels_knn[encode_idx] <- encode_knn_labels
+
+# Add confidence score for ENCODE cells
+encode_confidence_all <- rep(NA, length(all_cells))
+encode_confidence_all[encode_idx] <- encode_knn_confidence
+
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data = final_labels_knn,
+  cells = all_cells,
+  name = "CellTypeKNN",
+  force = TRUE
+)
+
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data = encode_confidence_all,
+  cells = all_cells,
+  name = "KNNConfidence",
+  force = TRUE
+)
+
+cat("Final KNN label distribution:\n")
+print(sort(table(CombinedEpiProj$CellTypeKNN, useNA = "ifany"), decreasing = TRUE))
+
+cat("\nENCODE KNN label distribution:\n")
+print(sort(table(encode_knn_labels), decreasing = TRUE))
+
+cat("\nENCODE high confidence (>0.6) label distribution:\n")
+print(sort(table(encode_knn_labels[encode_knn_confidence > 0.6]), 
+  decreasing = TRUE))
+
+# Now collapse for peak calling - same approach as before
+final_labels_peaks_knn <- final_labels_knn
+
+# Collapse enteroendocrine subtypes
+final_labels_peaks_knn[final_labels_peaks_knn %in%
+  c("Enteroendocrine", "EnteroendocrineUn", "EnteroendocrineUn 1",
+    "D Cells", "L Cells", "Enterochromaffin", "I Cells",
+    "Mo Cells", "S Cells", "NEUROG3high")] <- "Enteroendocrine"
+
+CombinedEpiProj <- addCellColData(
+  ArchRProj = CombinedEpiProj,
+  data = final_labels_peaks_knn,
+  cells = all_cells,
+  name = "CellTypePeaksKNN",
+  force = TRUE
+)
+
+cat("\nCellTypePeaksKNN distribution:\n")
+print(sort(table(CombinedEpiProj$CellTypePeaksKNN, useNA = "ifany"), 
+  decreasing = TRUE))
+
+
 #######################################
 # Call peaks using MACS2
 #######################################
@@ -588,7 +1038,7 @@ projArchR <- addReproduciblePeakSet(
 )
 
 #######################################
-# Generate sample BigWigs
+# Generate sample BigWigs for cCRE pipeline
 #######################################
 
 getGroupBW(
