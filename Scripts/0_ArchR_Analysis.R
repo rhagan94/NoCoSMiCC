@@ -848,16 +848,49 @@ ggsave(
 # Call peaks
 #######################################
 
+# Remove Tuft cells (low number)
+CombinedEpiProj <- CombinedEpiProj[CombinedEpiProj$CellTypeTA != "Tuft", ]
+
 CombinedEpiProj <- addGroupCoverages(
   ArchRProj = CombinedEpiProj,
-  groupBy = "FinalCellType",
+  groupBy = "CellTypeTA",
+  force = TRUE
+)
+pathToMacs2 <- "/mnt/tier2/project/p201120/ryan/envs/envs/macs2_env/bin/macs2"
+CombinedEpiProj <- addReproduciblePeakSet(
+  ArchRProj = CombinedEpiProj,
+  groupBy = "CellTypeTA",
+  pathToMacs2 = pathToMacs2,
+  maxPeaks = 200000,
+  force = TRUE
+)
+
+CombinedEpiProj <- addPeakMatrix(CombinedEpiProj)
+
+# Get the consensus peaks and export to BED
+consensus_peaks <- getPeakSet(CombinedEpiProj)
+
+library(rtracklayer)
+export(consensus_peaks, 
+       con = "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/PeakCalls/BED/consensus_peaks.bed",
+       format = "BED")
+
+
+
+
+
+
+
+CombinedEpiProj <- addGroupCoverages(
+  ArchRProj = CombinedEpiProj,
+  groupBy = "CellTypeTA",
   force = TRUE
 )
 
 pathToMacs2 <- "/mnt/tier2/project/p201120/ryan/envs/envs/macs2_env/bin/macs2"
 CombinedEpiProj <- addReproduciblePeakSet(
   ArchRProj = CombinedEpiProj,
-  groupBy = "FinalCellType",
+  groupBy = "CellTypeTA",
   pathToMacs2 = pathToMacs2,
   force = TRUE
 )
@@ -869,8 +902,8 @@ CombinedEpiProj <- addPeakMatrix(CombinedEpiProj)
 # Convert .rds to bed
 #######################################
 
-rds_dir <- "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/outputs/ArrowFiles/ArchR_Epithelial_Combined/PeakCalls/Sample/"
-out_dir  <- "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/outputs/ArrowFiles/ArchR_Epithelial_Combined/PeakCalls/BED/"
+rds_dir <- "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/PeakCalls/CellTypeTA/"
+out_dir  <- "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/PeakCalls/BED/"
 
 rds_files <- list.files(rds_dir, pattern = "\\.gr\\.rds$", full.names = TRUE)
 
@@ -880,6 +913,7 @@ for (f in rds_files) {
   export(gr, con = file.path(out_dir, paste0(sample_name, ".bed")), format = "BED")
 }
 
+
 #######################################
 # Generate sample BigWigs for cCRE pipeline
 #######################################
@@ -888,8 +922,7 @@ getGroupBW(
   ArchRProj = CombinedEpiProj,
   groupBy = "Sample",
   normMethod = "ReadsInTSS",
-  tileSize = 25,
-  maxCells = 5000
+  tileSize = 25
 )
 
 getOutputDirectory(ArchRProj = CombinedEpiProj)
