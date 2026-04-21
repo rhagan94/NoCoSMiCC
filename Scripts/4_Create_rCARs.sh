@@ -1,8 +1,7 @@
 #!/bin/bash
 
-genome=hg38
-dir=/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/$genome-rCARs
-scriptDir=/Users/ryanhagan/NoCoSMiCC/Scripts/ENCODE_cCRE_pipeline_replication
+dir=/project/home/p201120/ryan/cCRE_pipeline/outputs/Bulk-colon-rCARs
+scriptDir=/project/home/p201120/ryan/cCRE_pipeline/scripts
 
 cd $dir/Processed-CARs
 
@@ -14,11 +13,6 @@ sort -n merged_DNase_signal.txt  | awk '{all[NR] = $0} END{print all[int(NR*0.1 
 paste output.ENCFF668GUI output.ENCFF033RPN output.ENCFF811ERB output.ENCFF509NRA output.ENCFF057BIJ output.ENCFF961XDO \
 output.ENCFF784HME output.ENCFF049WJI output.ENCFF796DRU | awk '{ print $6}' > merged_ATAC_signal.txt
 sort -n merged_ATAC_signal.txt  | awk '{all[NR] = $0} END{print all[int(NR*0.1 - 0.5)]}' # 2.2947
-
-# Calculate the 10th percentile of average signal in scATAC regions
-paste output.sc.Transverse_ENCSR349XKD output.sc.Transverse_ENCSR434SXE output.sc.Transverse_ENCSR506YMX \
-output.sc.Transverse_ENCSR997YNO output.sc.Left_ENCSR830FPR | awk '{ print $6}' > merged_scATAC_signal.txt
-sort -n merged_scATAC_signal.txt  | awk '{all[NR] = $0} END{print all[int(NR*0.1 - 0.5)]}' # 0.00688278
 
 ## Process the DNase data
 echo -e "Combining DNase peaks..."
