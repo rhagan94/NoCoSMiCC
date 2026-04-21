@@ -875,6 +875,133 @@ export(consensus_peaks,
        con = "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/PeakCalls/BED/consensus_peaks.bed",
        format = "BED")
 
+#######################################
+# Non-epithelial peaks for comparison
+#######################################
+
+# Define non-epithelial clusters
+ENCODE_Nonepi_Clusters <-  list(
+  "ENCSR997YNO" = c("C3", "C4", "C5"),
+  "ENCSR830FPR" = c("C5", "C6", "C7", "C8", "C9", "C10", "C11"),
+  "ENCSR349XKD" = c("C4", "C5", "C6"),
+  "ENCSR434SXE" = c("C2", "C3", "C4"),
+  "ENCSR506YMX" = c("C2", "C3", "C4", "C5", "C6"),
+  "ENCSR904WIW" = c("C8", "C9", "C10", "C11", "C12"),
+  "ENCSR916RYB" = c("C1", "C2"),
+  "ENCSR007QIO" = c("C1", "C2", "C3", "C4"),
+  "ENCSR388NCA" = c("C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"),
+  "ENCSR367GKP" = c("C1", "C2", "C3", "C4", "C5")
+)
+
+NonEpithelialCells <- c()
+
+for(samp in names(ENCODE_Nonepi_Clusters)) {
+  
+  cat("\nSubsetting non-epithelial cells from:", samp, "\n")
+
+  sampProj <- loadArchRProject(paste0("ArchR_", samp))
+  
+  NonepiClusters <- ENCODE_Nonepi_Clusters[[samp]]
+  NonepiCells <- getCellNames(sampProj)[sampProj$Clusters %in% NonepiClusters]
+  
+  cat("Non-Epithelial cells:", length(NonepiCells), "\n")
+  NonEpithelialCells <- c(NonEpithelialCells, NonepiCells)
+}
+
+cat("\nTotal non-epithelial cells across ENCODE samples:", length(NonEpithelialCells), "\n")
+
+# Subset ENCODE project to non-epithelial cells
+ENCODEProjNonEpi <- subsetArchRProject(
+  ArchRProj = ENCODEproj,
+  cells = NonEpithelialCells,
+  outputDirectory = "ArchR_Non_Epithelial_ENCODE",
+  force = TRUE
+)
+
+table(ENCODEProjNonEpi$Sample)
+
+# Non-epithelial cell barcodes from HuBMAP
+HuBMAP_multiome_colon_stromal_barcodes <- read.table(
+  "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/files/stromal_peak_matrix_cells.tsv",
+  header = FALSE,
+  stringsAsFactors = FALSE,
+  comment.char = ""
+)$V1
+
+HuBMAP_Nonmultiome_colon_stromal_barcodes <- read.table(
+  "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/files/non_multiome_stromal_peak_matrix_cells.tsv",
+  header = FALSE,
+  stringsAsFactors = FALSE,
+  comment.char = ""
+)$V1
+
+HuBMAP_multiome_colon_immune_barcodes <- read.table(
+  "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/files/immune_peak_matrix_cells.tsv",
+  header = FALSE,
+  stringsAsFactors = FALSE,
+  comment.char = ""
+)$V1
+
+HuBMAP_Nonmultiome_colon_immune_barcodes <- read.table(
+  "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/files/non_multiome_immune_peak_matrix_cells.tsv",
+  header = FALSE,
+  stringsAsFactors = FALSE,
+  comment.char = ""
+)$V1
+
+# Combine HuBMAP multiome and non-multiome stromal and immune barcodes
+HuBMAPNonEpiCells <- c(
+  HuBMAP_multiome_colon_stromal_barcodes,
+  HuBMAP_Nonmultiome_colon_stromal_barcodes,
+  HuBMAP_multiome_colon_immune_barcodes,
+  HuBMAP_Nonmultiome_colon_immune_barcodes
+)
+
+# Define all epithelial cells
+AllNonEpiCells <- c(getCellNames(ENCODEProjNonEpi), HuBMAPNonEpiCells)
+
+# Check what's available in CombinedProj
+available_cells <- getCellNames(CombinedProj)
+
+# Deduplicate and filter to only valid cells
+AllNonEpiCells_clean <- unique(AllNonEpiCells)
+AllNonEpiCells_valid <- AllNonEpiCells_clean[AllNonEpiCells_clean %in% available_cells]
+
+# Diagnostic — see how many were dropped
+cat("Total NonEpi barcodes:    ", length(AllNonEpiCells_clean), "\n")
+cat("Valid in CombinedProj:    ", length(AllNonEpiCells_valid), "\n")
+cat("Not found (dropped):      ", length(AllNonEpiCells_clean) - length(AllNonEpiCells_valid), "\n")
+
+# Subset with clean cell list
+CombinedNonEpiProj <- subsetArchRProject(
+  ArchRProj     = CombinedProj,
+  cells         = AllNonEpiCells_valid,
+  outputDirectory = "ArchR_Non_Epithelial_Combined",
+  force         = TRUE
+)
+
+getGroupBW(
+  ArchRProj = CombinedNonEpiProj,
+  groupBy = "Sample"
+)
+saveArchRProject(CombinedNonEpiProj)
+
+## Heatmap 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -920,46 +1047,14 @@ for (f in rds_files) {
 
 getGroupBW(
   ArchRProj = CombinedEpiProj,
-  groupBy = "Sample",
-  normMethod = "ReadsInTSS",
-  tileSize = 25
+  groupBy = "Sample"
+
 )
 
 getOutputDirectory(ArchRProj = CombinedEpiProj)
 
 
 
-#######################################
-# Non-epithelial peaks for comparison
-#######################################
-
-# Define non-epithelial clusters
-ENCODE_Nonepi_Clusters <-  list(
-  "ENCSR997YNO" = c("C1", "C2"),
-  "ENCSR830FPR" = c("C1", "C2", "C3", "C4"),
-  "ENCSR349XKD" = c("C1", "C2"),
-  "ENCSR434SXE" = c("C1"),
-  "ENCSR506YMX" = c("C2"),
-  "ENCSR904WIW" = c("C1", "C2", "C3", "C4", "C5","C6"),
-  # Samples with no epithelial clusters are omitted
-)
-
-NonEpithelialCells <- c()
-
-for(samp in names(ENCODE_Nonepi_Clusters)) {
-  
-  cat("\nSubsetting non-epithelial cells from:", samp, "\n")
-
-  sampProj <- loadArchRProject(paste0("ArchR_", samp))
-  
-  NonepiClusters <- ENCODE_Nonepi_Clusters[[samp]]
-  NonepiCells <- getCellNames(sampProj)[sampProj$Clusters %in% epiClusters]
-  
-  cat("Non-Epithelial cells:", length(NonepiCells), "\n")
-  NonEpithelialCells <- c(NonEpithelialCells, NonepiCells)
-}
-
-cat("\nTotal non-epithelial cells across ENCODE samples:", length(NonEpithelialCells), "\n")
 
 
 
