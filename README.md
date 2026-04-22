@@ -7,7 +7,7 @@
 [![DOI](https://img.shields.io/badge/DOI-pending-lightgrey.svg)](link-to-publication)
 [![Genomics](https://img.shields.io/badge/Field-Cancer%20Genomics-purple.svg)]()
 
-*A comprehensive analysis for identifying non-coding driver mutations in colorectal cancer using 5,000+ whole genomes and tissue-specific regulatory maps*
+*Identifying non-coding driver mutations in colorectal cancer using 5,000+ whole genomes and colon epithelial-specific regulatory elements*
 
 [Publication](#) • [Documentation](#) • [Data Access](#data-access)
 
