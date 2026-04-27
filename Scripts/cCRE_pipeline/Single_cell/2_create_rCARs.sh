@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir=/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-rCARs
+dir=/project/home/p201120/ryan/cCRE_pipeline/outputs/colon-epithelial-rCARs
 outdir=$dir/Filtered-CARs
 
 mkdir -p "$outdir"
