@@ -9,8 +9,9 @@
 library(ggplot2)
 
 phyloP241_matrix = "/project/home/p201120/ryan/cCRE_pipeline/outputs/phyloP241_matrix.mtx"
-cCRE_file = "/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/colon-epithelial-lifted-cCREs.bed"
-#cCRE_file="/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-cCREs-Z1.28.bed"
+cCRE_file="/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-cCREs-Z1.28.bed"
+lifted_cCRE_file = "/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/colon-epithelial-lifted-cCREs.bed"
+non_lifted_cCRE_file="/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/colon-epithelial-nonlifted-cCREs.bed"
 
 # Process the data
 df = read.table(cCRE_file)
@@ -86,7 +87,7 @@ ggplot(d, aes(x=loci, y=score,col=cCRE)) +
         axis.text.y = element_text(face="bold"),
         axis.title.x = element_text(face="bold"),
         axis.title.y = element_text(face="bold"))
-ggsave("phyloP_cCREs_v2.png")
+ggsave("phyloP_cCREs.png")
 #gsave(output_fig, width=5)
 
 
