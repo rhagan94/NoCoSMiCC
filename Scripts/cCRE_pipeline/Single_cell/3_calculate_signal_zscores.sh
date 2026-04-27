@@ -2,7 +2,7 @@
 
 mode=$1
 files=/project/home/p201120/ryan/cCRE_pipeline/files/${mode}-List_colon.txt
-output=/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/signal-output
+output=/project/home/p201120/ryan/cCRE_pipeline/outputs/sc-signal-output
 scriptDir=/project/home/p201120/ryan/cCRE_pipeline/scripts
 peaks=/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-rCARs/Filtered-CARs/scATAC-rCAR-labelled.bed
 bigwigDir=/project/home/p201120/ryan/cCRE_pipeline/files/Bigwigs
