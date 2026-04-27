@@ -2,8 +2,7 @@
 
 ConsensusPeaks=/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/PeakCalls/BED/consensus_peaks.bed
 signalDir=/mnt/tier2/project/p201120/ryan/cCRE_pipeline/ArchR_Epithelial_Combined/GroupBigWigs/Sample
-outdir=/mnt/tier2/project/p201120/ryan/cCRE_pipeline/outouts/colon-epithelial-rCARs/Processed-CARs
-BWAvOverBed=/mnt/tier2/project/p201120/ryan/envs/get/bin/bigWigAverageOverBed
+outdir=/mnt/tier2/project/p201120/ryan/cCRE_pipeline/outputs/colon-epithelial-rCARs/Processed-CARs
 
 # Make the out dir 
 mkdir -p "$outdir"
@@ -18,7 +17,7 @@ for bw in "$signalDir"/*.bw; do
     dset=$(basename "$bw" -TileSize-100-normMethod-ReadsInTSS-ArchR.bw)
     tmp_out=$(mktemp -t out_XXXXXX.tab)
 
-    "$BWAvOverBed" "$bw" "$tmp_peaks" "$tmp_out"
+    bigWigAverageOverBed "$bw" "$tmp_peaks" "$tmp_out"
 
     # Join
     join -1 4 -2 1 \
