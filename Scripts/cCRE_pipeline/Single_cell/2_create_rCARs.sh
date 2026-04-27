@@ -19,7 +19,7 @@ awk -v cutoff="$cutoff" 'BEGIN{OFS="\t"} $6 >= cutoff' \
     "$dir/scATAC-CAR-All.bed" | \
 sort -k1,1 -k2,2n > "$outdir/scATAC-CAR-Filtered-All.bed"
 
-echo "Picking best signal per peak..."
+echo "Selecting best peak..."
 sort -k4,4 -k6,6rn "$outdir/scATAC-CAR-Filtered-All.bed" | \
     sort -k4,4 -u | \
     sort -k1,1 -k2,2n \
