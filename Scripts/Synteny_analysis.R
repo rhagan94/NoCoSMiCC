@@ -4,12 +4,14 @@
 library(GENESPACE)
 library(dplyr)
 library(GenomicRanges)
+library(rtracklayer)
 
 # Get data together
-genomeRepo <- "/Users/ryanhagan/NoCoSMiCC/Synteny/Genomes"
-wd <- "/Users/ryanhagan/NoCoSMiCC/Synteny"
-path2mcscanx <- "/Users/ryanhagan/MCScanX-master"
+genomeRepo <- "/project/home/p201120/ryan/Synteny/Genomes"
+wd <- "/project/home/p201120/ryan/Synteny"
+path2mcscanx <- "/mnt/tier2/project/p201120/ryan/envs/get/bin"
 
+# Download the Human, Mouse and Dog genome data
 urls <- c(
   human ="000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_",
   mouse = "000/001/635/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_",
@@ -50,13 +52,12 @@ gpar <- init_genespace(
   wd = wd,
   path2mcscanx = path2mcscanx)
 
+# Conduct GENESPACE run
 out <- run_genespace(gpar, overwrite = T)
 
 # Read the syntenic block coordinates into R
-syntenic_blocks <- read.csv("/mnt/tier2/project/p201120/ryan/Synteny/results/syntenicBlock_coordinates.csv")
+syntenic_blocks <- read.csv(file.path(wd, "results/syntenicBlock_coordinates.csv"))
 
-library(dplyr)
-library(GenomicRanges)
 syntenic_blocks_human_mouse <- as.data.frame(syntenic_blocks) %>% 
                         filter(genome1 == 'human', genome2 == 'mouse'| (genome1 == 'mouse' & genome2 == 'human')) %>%
                         dplyr::select(chr1, startBp1, endBp1) %>%
@@ -67,8 +68,8 @@ syntenic_blocks_human_mouse
 
 syntenic_blocks_human_mouse$Chr <- paste("chr", syntenic_blocks_human_mouse$Chr, sep = "")
 
-syntenic_blocks_human_GR <- makeGRangesFromDataFrame(syntenic_blocks_human_mouse)
-syntenic_blocks_human_GR
+syntenic_blocks_human_mouse_GR <- makeGRangesFromDataFrame(syntenic_blocks_human_mouse)
+syntenic_blocks_human_mouse_GR
 
 syntenic_blocks_human_dog <- as.data.frame(syntenic_blocks) %>% 
   filter(genome1 == 'human', genome2 == 'dog'| (genome1 == 'dog' & genome2 == 'human')) %>%
@@ -83,24 +84,74 @@ syntenic_blocks_human_dog$Chr <- paste("chr", syntenic_blocks_human_dog$Chr, sep
 syntenic_blocks_human_dog_GR <- makeGRangesFromDataFrame(syntenic_blocks_human_dog)
 syntenic_blocks_human_dog_GR
 
+syntenic_blocks_both_GR <- subsetByOverlaps(syntenic_blocks_human_mouse_GR,
+                                             syntenic_blocks_human_dog_GR)
+
+cat("Human-mouse syntenic blocks: ", length(syntenic_blocks_human_mouse_GR), "\n")
+cat("Human-dog syntenic blocks: ", length(syntenic_blocks_human_dog_GR), "\n")
+cat("Conserved in both mouse and dog: ", length(syntenic_blocks_both_GR), "\n")
+
+# ===========================================================================
+# 7. Overlap with colon epithelial cCREs
+# ===========================================================================
+
+ccre_gr <- import(
+  "/mnt/tier2/project/p201120/ryan/cCRE_pipeline/outputs/colon-epithelial-cCREs.bed",
+  format    = "BED",
+  extraCols = c(type = "character")
+)
+
+# cCREs within syntenic regions
+ccres_in_syntenic <- subsetByOverlaps(ccre_gr, syntenic_blocks_both_GR)
+
+# cCREs outside syntenic regions (potentially human-specific)
+ccres_not_in_syntenic <- subsetByOverlaps(ccre_gr, syntenic_blocks_both_GR, invert = TRUE)
+
+cat("Total cCREs: ", length(ccre_gr), "\n")
+cat("cCREs in syntenic regions: ", length(ccres_in_syntenic), "\n")
+cat("cCREs NOT in syntenic regions: ", length(ccres_not_in_syntenic), "\n")
+cat("% in syntenic regions:", round(length(ccres_in_syntenic) / length(ccre_gr) * 100, 1), "%\n")
+
+export(ccres_in_syntenic,
+  file.path(wd, "results/cCREs_in_syntenic_regions.bed"),
+  format = "BED")
+
+export(ccres_not_in_syntenic,
+  file.path(wd, "results/cCREs_NOT_in_syntenic_regions.bed"),
+  format = "BED")
+
+
+
+
+
+
+
+
+
+
+
+
+############################################################################################
+
+
 # assess peak widths 
-blocks_width <- as.data.frame(syntenic_blocks_human_GR@ranges@width)
+blocks_width <- as.data.frame(syntenic_blocks_both_GR@ranges@width)
 blocks_width
 
 library(ggplot2)
-p <- ggplot(blocks_width, aes(x = syntenic_blocks_human_GR@ranges@width)) + 
+p <- ggplot(blocks_width, aes(x = syntenic_blocks_both_GR@ranges@width)) + 
   geom_histogram(color="#bd7ebe", fill="#bd7ebe", bins = 100, alpha = 0.5) +
  # xlim(0,2000) +
   labs(x = "Width (bp)", y = "Frequency")+
-  geom_vline(aes(xintercept = mean(syntenic_blocks_human_GR@ranges@width)),col='#b2e061',size=0.8, linetype = "dashed")+
+  geom_vline(aes(xintercept = median(syntenic_blocks_human_GR@ranges@width)),col='#b2e061',size=0.8, linetype = "dashed")+
   theme_bw() +
   theme(axis.title.x = element_text(face = "bold"),
         axis.title.y = element_text(face = "bold"),
         plot.title = element_text(face = "bold")) +
-  ggtitle("Human-mouse syntenic regions")
+  ggtitle("Human-mouse-dog syntenic regions")
 
 ggsave(
-  filename = "/mnt/tier2/project/p201120/ryan/Synteny/results/human_mouse_syntenic_regions.png",
+  filename = "/mnt/tier2/project/p201120/ryan/Synteny/results/syntenic_regions.png",
   plot = p,
   width = 8,
   height = 6,
@@ -138,13 +189,13 @@ rtracklayer::export.bed(syntenic_blocks_human_dog_GR, "/Users/ryanhagan/NoCoSMiC
 
 
 # Compare syntenic and non-syntenic cCREs
-all_cCREs <- ChIPQC:::GetGRanges("/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/hg38-rCARs/MaxZ/hg38-cCREs-v3.bed", simple = TRUE)
+all_cCREs <- ChIPQC:::GetGRanges("/project/home/p201120/ryan/cCRE_pipeline/outputs/colon-epithelial-cCREs.bed", simple = TRUE)
 all_cCREs
 
-syntenic_cCREs <- ChIPQC:::GetGRanges("/Users/ryanhagan/NoCoSMiCC/Synteny/syntenic_cCREs.bed", simple = TRUE)
+syntenic_cCREs <- ChIPQC:::GetGRanges("results/cCREs_in_syntenic_regions.bed", simple = TRUE)
 syntenic_cCREs
 
-nonsyntenic_cCREs <- ChIPQC:::GetGRanges("/Users/ryanhagan/NoCoSMiCC/Synteny/nonsyntenic_cCREs.bed", simple = TRUE)
+nonsyntenic_cCREs <- ChIPQC:::GetGRanges("results/cCREs_NOT_in_syntenic_regions.bed", simple = TRUE)
 nonsyntenic_cCREs
 
 # plot genomic locations
