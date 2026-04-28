@@ -26,10 +26,10 @@ liftOver $cCREs $filesDir/hg38.canFam6.rbest.chain $liftOverDir/sc_cCRE_dog_lift
 liftOver $cCREs $filesDir/hg38.canFam6.rbest.chain $liftOverDir/sc_cCRE_dog_lifted_0.9.bed $liftOverDir/sc_cCRE_dog_unlifted_0.9.bed -minMatch=0.9
 
 # Filter to keep cCREs lifted to mouse and dog
-cut -f4 $liftOverDir/sc_cCRE_mouse_lifted_0.9.bed \
+cut -f4 $liftOverDir/sc_cCRE_mouse_lifted_0.5.bed \
   | sort -u -o $liftOverDir/cCRE_mouse_ids_sorted.txt
 
-cut -f4 $liftOverDir/sc_cCRE_dog_lifted_0.9.bed \
+cut -f4 $liftOverDir/sc_cCRE_dog_lifted_0.5.bed \
   | sort -u -o $liftOverDir/cCRE_dog_ids_sorted.txt
 
 comm -12 $liftOverDir/cCRE_mouse_ids_sorted.txt $liftOverDir/cCRE_dog_ids_sorted.txt > $liftOverDir/overlapping_cCRE_ids.txt
