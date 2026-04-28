@@ -116,10 +116,21 @@ awk 'FNR==NR {x[$1];next} ($4 in x)' CTCFonly $rdhs | \
 awk 'FNR==NR {x[$1];next} ($4 in x)' CAonly   $rdhs | \
     awk '{print $1"\t"$2"\t"$3"\t"$4"\t""CA"}'          >> l.bed
 
-sort -k1,1 -k2,2n l.bed > $dataDir/colon-bulk-cCREs-Z1.28.bed   # <-- bulk in filename
+
+awk 'FNR==NR {x[$4];next} ($1 in x)' l.bed colon-CTCF-maxZ.txt | \
+    awk '{if ($2 > 1.28) print $0}' > CTCFall
+
+awk 'FNR==NR {x[$1];next} ($4 in x)' CTCFall l.bed | \
+    awk '{print $0",CTCF-bound"}' > m.bed
+awk 'FNR==NR {x[$1];next} !($4 in x)' CTCFall l.bed | \
+    awk '{print $0}' >> m.bed
+
+sort -k1,1 -k2,2n m.bed > l.bed
+
+sort -k1,1 -k2,2n l.bed > $dataDir/colon-bulk-cCREs.bed 
 echo "Done."
 
 # ---- Summary ----
 echo "Classification counts:"
-awk '{print $5}' $dataDir/colon-bulk-cCREs-Z1.28.bed | sort | uniq -c | sort -rn
-wc -l $dataDir/colon-bulk-cCREs-Z1.28.bed
+awk '{print $5}' $dataDir/colon-bulk-cCREs.bed | sort | uniq -c | sort -rn
+wc -l $dataDir/colon-bulk-cCREs.bed 
