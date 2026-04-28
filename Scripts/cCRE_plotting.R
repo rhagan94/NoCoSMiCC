@@ -10,55 +10,73 @@ library(patchwork)
 library(dplyr)
 library(RColorBrewer)
 library(rtracklayer)
+library(GenomeInfoDb)
+library(gggenes)
 
 # Load the cCREs and annotation files for each species
 ## Human
-human_ccre_bed = read.table("/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/sc-only-lifted-cCREs-2025.bed")
+human_ccre_bed = read.table("/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/colon-epithelial-lifted-cCREs.bed")
 human_ccre_gr <- makeGRangesFromDataFrame(human_ccre_bed, keep.extra.columns=TRUE,
                                           start.field="V2",
                                           end.field = "V3",
                                           seqnames.field="V1")
 human_ccre_gr
 
-human_gtf <- import("/Users/ryanhagan/NoCoSMiCC/Files/gencode.v47.annotation.gtf")
-human_gtf_genes <- human_gtf[human_gtf$type == "gene" & human_gtf$gene_type == "protein_coding"]
-human_genes_gr <- as(gtf_genes, "GRanges")
+human_gtf <- import("/mnt/tier2/project/p201120/ryan/refs/gtf/Homo_sapiens.GRCh38.113.gtf.gz")
+human_gtf_genes <- human_gtf[human_gtf$type == "gene" & human_gtf$gene_biotype == "protein_coding"]
+human_genes_gr <- as(human_gtf_genes, "GRanges")
 human_genes_gr
 
 ## Mouse
-mouse_ccre_bed = read.table("/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/sc_cCRE_mouse_lifted.bed")
+mouse_ccre_bed = read.table("/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/sc_cCRE_mouse_lifted_0.5.bed")
 mouse_ccre_gr <- makeGRangesFromDataFrame(mouse_ccre_bed, keep.extra.columns=TRUE,
                                           start.field="V2",
                                           end.field = "V3",
                                           seqnames.field="V1")
 mouse_ccre_gr
 
-mouse_gtf <- import("/Users/ryanhagan/NoCoSMiCC/TAD_Analysis/Files/gencode.vM10.annotation.gtf.gz")
-mouse_gtf_genes <- mouse_gtf[mouse_gtf$type == "gene" & mouse_gtf$gene_type == "protein_coding"]
-mouse_genes_gr <- as(gtf_genes, "GRanges")
+mouse_gtf <- import("/mnt/tier2/project/p201120/ryan/refs/gtf/Mus_musculus.GRCm39.113.gtf.gz")
+mouse_gtf_genes <- mouse_gtf[mouse_gtf$type == "gene" & mouse_gtf$gene_biotype == "protein_coding"]
+mouse_genes_gr <- as(mouse_gtf_genes, "GRanges")
 mouse_genes_gr
 
 ## Dog
-dog_ccre_bed = read.table("/Users/ryanhagan/NoCoSMiCC/ENCODE_outputs/LiftOver/sc_cCRE_dog_lifted.bed")
+dog_ccre_bed = read.table("/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/sc_cCRE_dog_lifted_0.5.bed")
 dog_ccre_gr <- makeGRangesFromDataFrame(dog_ccre_bed, keep.extra.columns=TRUE,
                                         start.field="V2",
                                         end.field = "V3",
                                         seqnames.field="V1")
 dog_ccre_gr
 
-dog_gtf <- import("/Users/ryanhagan/NoCoSMiCC/TAD_Analysis/Files/Canis_lupus_familiarisboxer.Dog10K_Boxer_Tasha.113.gtf")
+dog_gtf <- import("/mnt/tier2/project/p201120/ryan/refs/gtf/Canis_lupus_familiarisboxer.Dog10K_Boxer_Tasha.113.gtf.gz")
 dog_gtf_genes <- dog_gtf[dog_gtf$type == "gene" & dog_gtf$gene_biotype == "protein_coding"]
-dog_genes_gr <- as(gtf_genes, "GRanges")
+dog_genes_gr <- as(dog_gtf_genes, "GRanges")
 dog_genes_gr
 
-## modify seqnames of dog genome
-current_seqlevels <- seqlevels(dog_gtf_genes)
-new_seqlevels <- ifelse(grepl("^chr", current_seqlevels),
+## modify seqnames
+current_seqlevels_dog <- seqlevels(dog_gtf_genes)
+new_seqlevels <- ifelse(grepl("^chr", current_seqlevels_dog),
                         current_seqlevels,
-                        paste0("chr", current_seqlevels))
+                        paste0("chr", current_seqlevels_dog))
 
 # Set the new seqlevels to the GRanges object
 seqlevels(dog_gtf_genes) <- new_seqlevels
+
+current_seqlevels_human <- seqlevels(human_gtf_genes)
+new_seqlevels <- ifelse(grepl("^chr", current_seqlevels_human),
+                        current_seqlevels,
+                        paste0("chr", current_seqlevels_human))
+
+# Set the new seqlevels to the GRanges object
+seqlevels(human_gtf_genes) <- new_seqlevels
+
+current_seqlevels_mouse <- seqlevels(mouse_gtf_genes)
+new_seqlevels <- ifelse(grepl("^chr", current_seqlevels_mouse),
+                        current_seqlevels,
+                        paste0("chr", current_seqlevels_mouse))
+
+# Set the new seqlevels to the GRanges object
+seqlevels(mouse_gtf_genes) <- new_seqlevels
 
 ## Define the function for plotting
 plot_cCRE_region <- function(ccre_id, flank = 50000, human_gtf_genes, human_ccre_filtered, species = species) { 
@@ -188,11 +206,11 @@ plot_cCRE_region <- function(ccre_id, flank = 50000, human_gtf_genes, human_ccre
   print(combined_plot)
 }
 
-human_cCRE <- plot_cCRE_region("ColoncCRE42", flank = 6800, human_gtf_genes, human_ccre_gr, species = "Human")
+human_cCRE <- plot_cCRE_region("ColoncCRE71", flank = 6800, human_gtf_genes, human_ccre_gr, species = "Human")
 human_cCRE
-mouse_cCRE <- plot_cCRE_region("ColoncCRE42", flank = 6800, mouse_gtf_genes, mouse_ccre_gr, species = "Mouse")
+mouse_cCRE <- plot_cCRE_region("ColoncCRE71", flank = 6800, mouse_gtf_genes, mouse_ccre_gr, species = "Mouse")
 mouse_cCRE
-dog_cCRE <- plot_cCRE_region("ColoncCRE42", flank = 6800, dog_gtf_genes, dog_ccre_gr, species = "Dog")
+dog_cCRE <- plot_cCRE_region("ColoncCRE71", flank = 6800, dog_gtf_genes, dog_ccre_gr, species = "Dog")
 dog_cCRE
 
 combined_plot <- wrap_elements(human_cCRE) | wrap_elements(mouse_cCRE) | wrap_elements(dog_cCRE)
@@ -393,4 +411,263 @@ plot_cCRE_region("ColoncCRE101760", flank = 10000, mouse_gtf_transcripts, mouse_
 plot_cCRE_region("ColoncCRE101760", flank = 10000, dog_gtf_transcripts, dog_ccre_gr, species = "Dog")
 
 
+###### 2026 Update #######
+# =============================================================================
+# cCRE synteny plot (horizontal 3-species panel)
+# Final reproducible version used for ColoncCRE189745
+# =============================================================================
+
+suppressPackageStartupMessages({
+  library(GenomicRanges)
+  library(ggplot2)
+  library(gggenes)
+  library(patchwork)
+  library(grid)
+  library(scales)
+})
+
+plot_cCRE_synteny_horizontal <- function(ccre_id,
+                                         flank_left    = 10000,
+                                         flank_right   = 120000,
+                                         human_gtf     = human_gtf_genes,
+                                         mouse_gtf     = mouse_gtf_genes,
+                                         dog_gtf       = dog_gtf_genes,
+                                         human_ccre    = human_ccre_gr,
+                                         mouse_ccre    = mouse_ccre_gr,
+                                         dog_ccre      = dog_ccre_gr) {
+
+  color_mapping  <- c("selected" = "#4CBB17", "other" = "grey70")
+  species_colors <- c("Human" = "#7F3D17", "Mouse" = "#1A5276", "Dog" = "#1D6A39")
+
+  make_species_panel <- function(ccre_gr, gtf_genes, species_label) {
+
+    ccre_selected <- ccre_gr[mcols(ccre_gr)$name == ccre_id]
+    if (length(ccre_selected) == 0) {
+      message(species_label, ": cCRE not found — skipping.")
+      return(NULL)
+    }
+
+    p_start <- max(1L, as.integer(start(ccre_selected)) - flank_left)
+    p_end   <- as.integer(end(ccre_selected)) + flank_right
+    p_chr   <- as.character(seqnames(ccre_selected))
+
+    plot_range <- GRanges(
+      seqnames = p_chr,
+      ranges   = IRanges(start = p_start, end = p_end)
+    )
+
+    genes_sub <- subsetByOverlaps(gtf_genes, plot_range)
+    ccre_sub  <- subsetByOverlaps(ccre_gr,   plot_range)
+
+    genes_df <- data.frame(
+      start     = pmax(as.integer(start(genes_sub)), p_start),
+      end       = pmin(as.integer(end(genes_sub)),   p_end),
+      strand    = as.character(strand(genes_sub)),
+      gene_name = as.character(mcols(genes_sub)$gene_name),
+      stringsAsFactors = FALSE
+    )
+    genes_df <- genes_df[!is.na(genes_df$gene_name), ]
+    genes_df <- genes_df[!duplicated(genes_df$gene_name), ]
+
+    ccre_df <- data.frame(
+      start = as.integer(start(ccre_sub)),
+      end   = as.integer(end(ccre_sub)),
+      name  = as.character(mcols(ccre_sub)$name),
+      type  = as.character(mcols(ccre_sub)$type),
+      stringsAsFactors = FALSE
+    )
+    ccre_df$highlight <- ifelse(ccre_df$name == ccre_id, "selected", "other")
+
+    sel <- ccre_df[ccre_df$name == ccre_id, ]
+    region_label <- paste0(
+      p_chr, ": ",
+      format(p_start, big.mark = ","),
+      " - ",
+      format(p_end, big.mark = ",")
+    )
+    sp_col <- species_colors[[species_label]]
+
+    # -------------------------------------------------------------------------
+    # cCRE track
+    # -------------------------------------------------------------------------
+    ccre_track <- ggplot(ccre_df) +
+      geom_rect(
+        aes(xmin = start, xmax = end, ymin = 0.45, ymax = 0.55, fill = highlight),
+        colour = "black",
+        linewidth = 0.3
+      ) +
+      geom_segment(
+        data = sel,
+        aes(
+          x    = (start + end) / 2,
+          xend = (start + end) / 2,
+          y    = 0.78,
+          yend = 0.63
+        ),
+        arrow     = arrow(type = "closed", length = unit(0.08, "inches")),
+        colour    = "red",
+        linewidth = 0.8
+      ) +
+      scale_fill_manual(values = color_mapping) +
+      scale_x_continuous(
+        limits = c(p_start, p_end),
+        labels = scales::comma
+      ) +
+      scale_y_continuous(limits = c(0.2, 0.85)) +
+      labs(title = species_label) +
+      theme_classic() +
+      theme(
+        plot.title      = element_text(
+          size   = 15,
+          face   = "bold",
+          colour = sp_col,
+          hjust  = 0.5
+        ),
+        axis.text.x     = element_blank(),
+        axis.ticks.x    = element_blank(),
+        axis.title.x    = element_blank(),
+        axis.line.x     = element_blank(),
+        axis.title.y    = element_blank(),
+        axis.text.y     = element_blank(),
+        axis.ticks.y    = element_blank(),
+        axis.line.y     = element_blank(),
+        legend.position = "none",
+        plot.margin     = margin(4, 6, 0, 6)
+      ) +
+      coord_cartesian(clip = "off")
+
+    # -------------------------------------------------------------------------
+    # Gene track
+    # -------------------------------------------------------------------------
+    gene_track <- ggplot(
+      genes_df,
+      aes(xmin = start, xmax = end, y = gene_name)
+    ) +
+      geom_gene_arrow(
+        data      = subset(genes_df, strand == "+"),
+        fill      = "#800020",
+        colour    = "grey30",
+        linewidth = 0.2
+      ) +
+      geom_gene_arrow(
+        data      = subset(genes_df, strand == "-"),
+        fill      = "#2171b5",
+        colour    = "grey30",
+        linewidth = 0.2,
+        forward   = FALSE
+      ) +
+      geom_text(
+        aes(x = (start + end) / 2, label = gene_name),
+        position = position_nudge(y = 0.35),
+        size     = 3.5,
+        colour   = "grey20"
+      ) +
+      theme_genes() +
+      scale_x_continuous(
+        limits = c(p_start, p_end),
+        labels = scales::comma,
+        guide  = guide_axis(check.overlap = TRUE)
+      ) +
+      labs(x = region_label) +
+      theme(
+        axis.title.x = element_text(
+          size   = 10,
+          face   = "bold",
+          colour = "grey40",
+          vjust  = -0.3
+        ),
+        axis.text.x  = element_text(
+          size   = 9,
+          colour = "grey40",
+          margin = margin(t = 6)
+        ),
+        axis.ticks.x = element_line(colour = "grey70"),
+        axis.title.y = element_blank(),
+        axis.text.y  = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.margin  = margin(0, 6, 18, 6)
+      ) +
+      coord_cartesian(clip = "off")
+
+    # -------------------------------------------------------------------------
+    # Stack cCRE + gene track, wrap in species-coloured box
+    # -------------------------------------------------------------------------
+    inner <- ccre_track / gene_track +
+      plot_layout(heights = c(0.4, 1))
+
+    inner + plot_annotation(
+      theme = theme(
+        plot.background = element_rect(
+          colour    = sp_col,
+          fill      = "white",
+          linewidth = 1.2
+        ),
+        plot.margin = margin(10, 10, 14, 10)
+      )
+    )
+  }
+
+  # ---------------------------------------------------------------------------
+  # Build species panels
+  # ---------------------------------------------------------------------------
+  human_panel <- make_species_panel(human_ccre, human_gtf, "Human")
+  mouse_panel <- make_species_panel(mouse_ccre, mouse_gtf, "Mouse")
+  dog_panel   <- make_species_panel(dog_ccre,   dog_gtf,   "Dog")
+
+  cat_label <- as.character(
+    mcols(human_ccre[mcols(human_ccre)$name == ccre_id])$type
+  )
+
+  # ---------------------------------------------------------------------------
+  # Assemble final horizontal figure
+  # ---------------------------------------------------------------------------
+  combined <- (
+    wrap_elements(human_panel) |
+    wrap_elements(mouse_panel) |
+    wrap_elements(dog_panel)
+  ) +
+    plot_annotation(
+      title = paste0(ccre_id, "  |  Category: ", cat_label),
+      theme = theme(
+        plot.title = element_text(
+          hjust  = 0.5,
+          size   = 18,
+          face   = "bold",
+          colour = "grey15"
+        ),
+        plot.margin = margin(15, 15, 15, 15)
+      )
+    )
+
+  print(combined)
+  invisible(combined)
+}
+
+# =============================================================================
+# Example run
+# =============================================================================
+
+p <- plot_cCRE_synteny_horizontal(
+  "ColoncCRE189745",
+  flank_left  = 10000,
+  flank_right = 120000
+)
+
+ggsave(
+  file.path(wd, "results/cCRE189745_synteny_horizontal.png"),
+  plot   = p,
+  width  = 12,
+  height = 6,
+  dpi    = 300
+)
+
+ggsave(
+  file.path(wd, "results/cCRE189745_synteny_horizontal.pdf"),
+  plot   = p,
+  width  = 12,
+  height = 6,
+  device = cairo_pdf
+)
+
+message("Saved!")
 
