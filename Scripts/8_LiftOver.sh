@@ -3,7 +3,7 @@
 # Define paths
 filesDir=/project/home/p201120/ryan/cCRE_pipeline/files
 liftOverDir=/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver
-cCREs=/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-cCREs-Z1.28.bed
+cCREs=/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-cCREs.bed
 lifted_output_file=$liftOverDir/colon-epithelial-lifted-cCREs.bed
 non_lifted_output_file=$liftOverDir/colon-epithelial-nonlifted-cCREs.bed
 
