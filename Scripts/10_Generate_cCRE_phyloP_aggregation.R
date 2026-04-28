@@ -14,7 +14,7 @@ lifted_cCRE_file = "/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/co
 non_lifted_cCRE_file="/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/colon-epithelial-nonlifted-cCREs.bed"
 
 # Process the data
-df = read.table(lifted_cCRE_file)
+df = read.table(non_lifted_cCRE_file)
 dat2 = read.table(phyloP241_matrix, row.names =1)
 #
 dat2_pls = dat2[df[df$V5=="PLS" | df$V5=="PLS,CTCF-bound",]$V4,]
@@ -80,7 +80,7 @@ ggplot(d, aes(x=loci, y=score,col=cCRE)) +
   #geom_hline(yintercept = 0.186608, col="#a1a1a1", linetype="solid") +
   #geom_hline(yintercept = 0.0817535, col="#a1a1a1", linetype="dashed") +
   #geom_hline(yintercept = mean(d$score), col="black", linetype="dashed") +
-  ggtitle("Lifted cCREs") + 
+  ggtitle("Non-lifted cCREs") + 
  ylim(-0.1, 2)+
   theme(plot.title = element_text(hjust = 0.5, face="bold"),
         axis.text.x = element_text(face="bold"),
@@ -88,7 +88,7 @@ ggplot(d, aes(x=loci, y=score,col=cCRE)) +
         axis.title.x = element_text(face="bold"),
         axis.title.y = element_text(face="bold"),
        legend.title = element_blank())
-ggsave("PhyloP_lifted_cCREs.png", width = 8, height = 6, dpi = 300)
+ggsave("PhyloP_nonlifted_cCREs.png", width = 8, height = 6, dpi = 300)
 #gsave(output_fig, width=5)
 
 
