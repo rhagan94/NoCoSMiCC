@@ -9,12 +9,12 @@
 library(ggplot2)
 
 phyloP241_matrix = "/project/home/p201120/ryan/cCRE_pipeline/outputs/phyloP241_matrix.mtx"
-cCRE_file="/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-cCREs-Z1.28.bed"
+cCRE_file="/project/home/p201120/ryan/cCRE_pipeline/ENCODE_outputs/colon-epithelial-cCREs.bed"
 lifted_cCRE_file = "/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/colon-epithelial-lifted-cCREs.bed"
 non_lifted_cCRE_file="/project/home/p201120/ryan/cCRE_pipeline/outputs/LiftOver/colon-epithelial-nonlifted-cCREs.bed"
 
 # Process the data
-df = read.table(cCRE_file)
+df = read.table(lifted_cCRE_file)
 dat2 = read.table(phyloP241_matrix, row.names =1)
 #
 dat2_pls = dat2[df[df$V5=="PLS" | df$V5=="PLS,CTCF-bound",]$V4,]
@@ -35,19 +35,19 @@ d2_dels$cCRE = "dELS"
 d2_dels$loci = 1:500
 d2_dels$phyloP = "phyloP241"
 #
-dat2_dnase = dat2[df[df$V5=="CA-H3K4me3",]$V4,]
+dat2_dnase = dat2[df[df$V5=="CA-H3K4me3" | df$V5=="CA-H3K4me3,CTCF-bound",]$V4,]
 d2_dnase = data.frame(apply(dat2_dnase,2,mean))
 d2_dnase$cCRE = "CA-H3K4me3"
 d2_dnase$loci = 1:500
 d2_dnase$phyloP = "phyloP241"
 # 
-dat2_ctcf  <- dat2[df[df$V5 == "CA-CTCF", ]$V4, ]
+dat2_ctcf  <- dat2[df[df$V5 == "CA-CTCF" | df$V5=="CA-CTCF,CTCF-bound",]$V4, ]
 d2_ctcf <- data.frame(apply(dat2_ctcf, 2, mean))
 d2_ctcf$cCRE <- "CA-CTCF"
 d2_ctcf$loci <- 1:500
 d2_ctcf$phyloP <- "phyloP241"
 # 
-dat2_ca_sub <- dat2[df[df$V5 == "CA", ]$V4, ]
+dat2_ca_sub <- dat2[df[df$V5 == "CA",]$V4, ]
 d2_ca <- data.frame(apply(dat2_ca_sub, 2, mean))
 d2_ca$cCRE <- "CA-only"
 d2_ca$loci <- 1:500
@@ -77,17 +77,18 @@ ggplot(d, aes(x=loci, y=score,col=cCRE)) +
     "CA-CTCF"    = "#66A61E",
     "CA-only"    = "#1B9E77"
   )) +
-  geom_hline(yintercept = 0.186608, col="#a1a1a1", linetype="solid") +
-  geom_hline(yintercept = 0.0817535, col="#a1a1a1", linetype="dashed") +
-  geom_hline(yintercept = mean(d$score), col="black", linetype="dashed") +
-  ggtitle("Lifted") + 
- ylim(-0.1, 1.6)+
+  #geom_hline(yintercept = 0.186608, col="#a1a1a1", linetype="solid") +
+  #geom_hline(yintercept = 0.0817535, col="#a1a1a1", linetype="dashed") +
+  #geom_hline(yintercept = mean(d$score), col="black", linetype="dashed") +
+  ggtitle("Lifted cCREs") + 
+ ylim(-0.1, 2)+
   theme(plot.title = element_text(hjust = 0.5, face="bold"),
         axis.text.x = element_text(face="bold"),
         axis.text.y = element_text(face="bold"),
         axis.title.x = element_text(face="bold"),
-        axis.title.y = element_text(face="bold"))
-ggsave("phyloP_cCREs.png")
+        axis.title.y = element_text(face="bold"),
+       legend.title = element_blank())
+ggsave("PhyloP_lifted_cCREs.png", width = 8, height = 6, dpi = 300)
 #gsave(output_fig, width=5)
 
 
