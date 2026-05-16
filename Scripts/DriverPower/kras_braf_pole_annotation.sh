@@ -13,8 +13,10 @@ zcat ../refs/Homo_sapiens.GRCh38.115.gtf.gz \
     | awk '{print $1, $4, $5}'
 
 # Set coordinates for target genes
-echo -e "chr7\t140719327\t140924976\nchr12\t132623753\t132687376\nchr12\t25205246\t25250936" > target_genes.bed
+echo -e "chr7\t140719327\t140924976\nchr12\t132623753\t132687376\nchr12\t25205246\t25250936\nchr19\t50384204\t50418018" > target_genes.bed
 
+# Verify
+cat target_genes.bed
 # Create the output directories
 mkdir -p $OUTDIR
 
