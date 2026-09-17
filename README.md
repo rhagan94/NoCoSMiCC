@@ -24,7 +24,7 @@ NoCoSMiCC aims to identify non-coding somatic driver mutations in colorectal can
 - 🧪 Integration of ENCODE, HuBMAP, and published datasets
 - 🔍 Analysis of somatic mutations in >5,000 CRC whole genomes across multiple cohorts
 - 📊 Evolutionary conservation and synteny analysis across 241 mammals
-- 🏗️ TAD-aware regulatory element mapping
+- 🏗️ TF motif disruption and chromatin contacts
 
 ## 📊 Citation
 
@@ -45,7 +45,7 @@ cd NoCoSMiCC
 
 Install dependencies
 conda env create -f environment.yml
-conda activate nocosmcc
+conda activate nocosmicc
 
 Run the cCRE generation pipeline
 ./scripts/run_pipeline.sh
